@@ -30,9 +30,11 @@ exports.userLogin = (req, res) => {
         .json({ message: "No user with that email was found" });
     } else {
       const user = result[0];
+      
       return bcrypt
-        .compare(password, result[0].pwd_hash)
+        .compare(password, user.PWD_HASH)
         .then((result) => {
+ 
           if (!result) {
             return res.status(401).json({ message: "Password incorrect" });
           } else {

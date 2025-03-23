@@ -1,0 +1,7 @@
+<button (click)="changeForm('login')">Login</button>
+<button (click)="changeForm('signup')">Signup</button>
+
+<app-login *ngIf="showForm == 'login'; else signup"></app-login>
+<ng-template #signup>
+  <app-signup *ngIf="showForm == 'signup'"></app-signup>
+</ng-template>

@@ -21,7 +21,7 @@ exports.createUser = (req, res) => {
 
 exports.userLogin = (req, res) => {
   const email = req.body.email;
-
+  const password = req.body.password;
   var sql = "SELECT * FROM user WHERE email = ?";
   con.query(sql, [email], (error, result) => {
     if (result.length == 0) {
@@ -31,7 +31,7 @@ exports.userLogin = (req, res) => {
     } else {
       const user = result[0];
       return bcrypt
-        .compare(req.body.password, result[0].password)
+        .compare(password, result[0].pwd_hash)
         .then((result) => {
           if (!result) {
             return res.status(401).json({ message: "Password incorrect" });

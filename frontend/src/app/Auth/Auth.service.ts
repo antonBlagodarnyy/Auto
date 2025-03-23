@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Router } from '@angular/router';
-import { catchError } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root',
@@ -20,5 +20,18 @@ export class AuthService {
         console.log(err);
       },
     });
+  }
+  login(email:string, password: string){
+    const authData = {email: email, password: password};
+    this.http.post(environment.apiUrl+'/users/login', authData).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    }
+
+    )
   }
 }

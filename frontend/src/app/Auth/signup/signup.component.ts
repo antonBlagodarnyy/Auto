@@ -36,7 +36,7 @@ export class SignupComponent {
         form.userName != null &&
         form.password != null
       ) {
-        this.authService.register(form.email, form.password, form.userName);
+        this.authService.register(form.userName,form.email, form.password );
       }
     }
   }

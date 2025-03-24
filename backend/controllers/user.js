@@ -45,7 +45,7 @@ exports.userLogin = (req, res) => {
             );
             res
               .status(200)
-              .json({ token: token, expiresIn: 3600, userId: user.id });
+              .json({ token: token, expiresIn: 3600, userId: user.ID });
           }
         });
     }

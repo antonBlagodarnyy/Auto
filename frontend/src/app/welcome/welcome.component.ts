@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-
-import { AuthComponent } from "../Auth/auth.component";
+import { RouterLink } from '@angular/router';
 
 
 @Component({
   selector: 'app-welcome',
-  imports: [ AuthComponent, ],
+  imports: [RouterLink],
   templateUrl: './welcome.component.html',
   styleUrl: './welcome.component.css',
 })

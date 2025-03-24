@@ -8,6 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../Auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -16,7 +17,7 @@ import { AuthService } from '../Auth.service';
   styleUrl: '../auth.component.css',
 })
 export class SignupComponent {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   registerForm = new FormGroup(
     {
@@ -28,6 +29,14 @@ export class SignupComponent {
     { validators: passwordMatch }
   );
 
+  ngOnInit(): void {
+    this.authService.autoAuthUser();
+
+    if (this.authService.getIsAuth()) {
+      this.router.navigate(['dashboard']);
+    }
+  }
+
   onSubmit() {
     if (!this.registerForm.invalid) {
       const form = this.registerForm.value;
@@ -36,7 +45,7 @@ export class SignupComponent {
         form.userName != null &&
         form.password != null
       ) {
-        this.authService.register(form.userName,form.email, form.password );
+        this.authService.register(form.userName, form.email, form.password);
       }
     }
   }

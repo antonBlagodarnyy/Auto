@@ -9,6 +9,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { AuthService } from './Auth.service';
+import { map, take } from 'rxjs';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,10 +19,15 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): MaybeAsync<GuardResult> {
-    const isAuth = this.authService.getIsAuth();
-    if (!isAuth) {
-      this.router.navigate(['/']);
-    }
-    return isAuth;
+    this.authService.autoAuthUser();
+    return this.authService.user.pipe(take(1), map(user => {
+      console.log(user);
+
+        if(user){
+          return true;
+        } else {
+          return this.router.createUrlTree(['/'])
+        }
+    }));
   }
 }

@@ -32,7 +32,7 @@ export class SignupComponent {
   ngOnInit(): void {
     this.authService.autoAuthUser();
 
-    if (this.authService.getIsAuth()) {
+    if (this.authService.user.getValue()) {
       this.router.navigate(['dashboard']);
     }
   }

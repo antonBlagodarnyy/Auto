@@ -16,12 +16,16 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    const authToken = this.authService.getToken();
+    const user = this.authService.user.getValue();
+    const authToken = user ? user.token : null; // Check if user exists before accessing token
 
-    const authRequest = req.clone({
-      headers: req.headers.set('Authorizarion', 'Bearer ' + authToken),
-    });
-
-    return next.handle(authRequest);
+    if (authToken) {
+      const authRequest = req.clone({
+        headers: req.headers.set('Authorization', 'Bearer ' + authToken),
+      });
+      return next.handle(authRequest);
+    } else {
+      return next.handle(req); // If no token, continue with the request without modifying headers
+    }
   }
 }

@@ -2,32 +2,21 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private isAuthenticated = false;
-  private token?: string | null;
+  user = new BehaviorSubject<{
+    token: string;
+    expirationDate: Date;
+    userId: number;
+  } | null>(null);
+
   private tokenTimer?: ReturnType<typeof setInterval> | null;
-  private userId?: number | null;
-  private authStatusListener = new Subject<boolean>();
 
   constructor(private http: HttpClient, private router: Router) {}
-
-  getToken() {
-    return this.token;
-  }
-  getIsAuth() {
-    return this.isAuthenticated;
-  }
-  getUserId() {
-    return this.userId;
-  }
-  getAuthStatusListener() {
-    return this.authStatusListener.asObservable();
-  }
 
   register(username: string, email: string, password: string) {
     const authData = { username: username, email: email, password: password };
@@ -39,23 +28,23 @@ export class AuthService {
       .subscribe({
         next: (response) => {
           const token = response.token;
-          this.token = token;
+          const expiresIn = response.expiresIn;
+          const userId = response.userId;
 
-          if (token) {
-            const expiresInDuration = response.expiresIn;
-
-            this.setAuthTimer(expiresInDuration);
-
-            this.isAuthenticated = true;
-            this.userId = response.userId;
-            this.authStatusListener.next(true);
+          if (token && expiresIn && userId) {
+            this.setAuthTimer(expiresIn);
 
             const now = new Date();
-            const expirationDate = new Date(
-              now.getTime() + expiresInDuration * 1000
-            );
+            const expirationDate = new Date(now.getTime() + expiresIn * 1000);
+            this.user.next({
+              token: token,
+              expirationDate: expirationDate,
+              userId: userId,
+            });
 
-            this.saveAuthData(token, expirationDate, this.userId);
+     
+
+            this.saveAuthData(token, expirationDate, userId);
             this.router.navigate(['/dashboard']);
           }
         },
@@ -74,23 +63,22 @@ export class AuthService {
       .subscribe({
         next: (response) => {
           const token = response.token;
-          this.token = token;
-
-          if (token) {
-            const expiresInDuration = response.expiresIn;
-
+          const expiresInDuration = response.expiresIn;
+          const userId = response.userId;
+          if (token && expiresInDuration && userId) {
             this.setAuthTimer(expiresInDuration);
-
-            this.isAuthenticated = true;
-            this.userId = response.userId;
-            this.authStatusListener.next(true);
 
             const now = new Date();
             const expirationDate = new Date(
               now.getTime() + expiresInDuration * 1000
             );
+            this.user.next({
+              token: token,
+              expirationDate: expirationDate,
+              userId: userId,
+            });
 
-            this.saveAuthData(token, expirationDate, this.userId);
+            this.saveAuthData(token, expirationDate, userId);
             this.router.navigate(['dashboard']);
           }
         },
@@ -102,23 +90,18 @@ export class AuthService {
   autoAuthUser() {
     const authInformation = this.getAuthData();
     if (!authInformation) {
+      this.user.next(null);
       return;
     }
     const now = new Date();
     const expiresIn = authInformation.expirationDate.getTime() - now.getTime();
     if (expiresIn > 0) {
-      this.token = authInformation.token;
-      this.isAuthenticated = true;
-      this.userId = authInformation.userId;
+      this.user.next(authInformation);
       this.setAuthTimer(expiresIn / 1000);
-      this.authStatusListener.next(true);
     }
   }
   logout() {
-    this.token = null;
-    this.isAuthenticated = false;
-    this.authStatusListener.next(false);
-    this.userId = null;
+    this.user.next(null);
     this.clearAuthData();
     this.router.navigate(['/']);
   }

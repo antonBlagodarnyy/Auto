@@ -12,10 +12,23 @@ exports.createUser = (req, res) => {
   bcrypt.hash(password, 10).then((hash) => {
     var sql =
       "insert into USER (USERNAME, EMAIL, PWD_HASH, AUTH_TYPE, EXTERNAL_ID) values (?,?,?,?,?)";
-    con.query(sql, [username, email, hash, authType, externalId], (err) => {
-      if (err) return res.status(520).json({ error: err.name });
-      else return res.status(201).json({ message: "passed" });
-    });
+    con.query(
+      sql,
+      [username, email, hash, authType, externalId],
+      (err, result) => {
+        if (err) return res.status(520).json({ error: err.name });
+        else {
+          const token = jwt.sign(
+            { email: email, userId: result.insertId },
+            process.env.JWT_KEY,
+            { expiresIn: "1h" }
+          );
+          return res
+            .status(201)
+            .json({ token: token, expiresIn: 3600, userId: result.insertId });
+        }
+      }
+    );
   });
 };
 
@@ -30,24 +43,21 @@ exports.userLogin = (req, res) => {
         .json({ message: "No user with that email was found" });
     } else {
       const user = result[0];
-      
-      return bcrypt
-        .compare(password, user.PWD_HASH)
-        .then((result) => {
- 
-          if (!result) {
-            return res.status(401).json({ message: "Password incorrect" });
-          } else {
-            const token = jwt.sign(
-              { email: user.email, userId: user.id },
-              process.env.JWT_KEY,
-              { expiresIn: "1h" }
-            );
-            res
-              .status(200)
-              .json({ token: token, expiresIn: 3600, userId: user.ID });
-          }
-        });
+
+      return bcrypt.compare(password, user.PWD_HASH).then((result) => {
+        if (!result) {
+          return res.status(401).json({ message: "Password incorrect" });
+        } else {
+          const token = jwt.sign(
+            { email: user.email, userId: user.id },
+            process.env.JWT_KEY,
+            { expiresIn: "1h" }
+          );
+          res
+            .status(200)
+            .json({ token: token, expiresIn: 3600, userId: user.ID });
+        }
+      });
     }
   });
 };

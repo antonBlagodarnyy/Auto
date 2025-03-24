@@ -31,15 +31,38 @@ export class AuthService {
 
   register(username: string, email: string, password: string) {
     const authData = { username: username, email: email, password: password };
-    this.http.post(environment.apiUrl + '/users/signup', authData).subscribe({
-      next: () => {
-        //TODO implement token
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
+    this.http
+      .post<{ token: string; expiresIn: number; userId: number }>(
+        environment.apiUrl + '/users/signup',
+        authData
+      )
+      .subscribe({
+        next: (response) => {
+          const token = response.token;
+          this.token = token;
+
+          if (token) {
+            const expiresInDuration = response.expiresIn;
+
+            this.setAuthTimer(expiresInDuration);
+
+            this.isAuthenticated = true;
+            this.userId = response.userId;
+            this.authStatusListener.next(true);
+
+            const now = new Date();
+            const expirationDate = new Date(
+              now.getTime() + expiresInDuration * 1000
+            );
+
+            this.saveAuthData(token, expirationDate, this.userId);
+            this.router.navigate(['/dashboard']);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
   }
   login(email: string, password: string) {
     const authData = { email: email, password: password };
@@ -52,7 +75,7 @@ export class AuthService {
         next: (response) => {
           const token = response.token;
           this.token = token;
-          
+
           if (token) {
             const expiresInDuration = response.expiresIn;
 

@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
   ): MaybeAsync<GuardResult> {
     const isAuth = this.authService.getIsAuth();
     if (!isAuth) {
-      this.router.createUrlTree(['/']);
+      this.router.navigate(['/']);
     }
     return isAuth;
   }

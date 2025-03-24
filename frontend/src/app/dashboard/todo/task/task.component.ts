@@ -10,18 +10,25 @@ import { Task } from './task.model';
       ><input
         type="checkbox"
         [checked]="task()?.checked"
-        (change)="toggleTask(task()?.id)"
-    /></span>
+        (change)="toggleTask(task()?.taskId)" /></span
+    ><button (click)="deleteTask(task()?.taskId)">Eliminar tarea</button>
   </li>`,
   styleUrl: './task.component.css',
 })
 export class TaskComponent {
   task = input<Task>();
   taskTogglesId = output<number>();
+  taskDeleteId = output<number>();
 
   toggleTask(taskId: number | undefined) {
     if (taskId != undefined) {
       this.taskTogglesId.emit(taskId);
+    }
+  }
+
+  deleteTask(taskId: number | undefined) {
+    if (taskId != undefined) {
+      this.taskDeleteId.emit(taskId);
     }
   }
 }

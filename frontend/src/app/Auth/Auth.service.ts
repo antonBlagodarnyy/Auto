@@ -128,7 +128,7 @@ export class AuthService {
     const token = localStorage.getItem('token');
     const expirationDateRaw = localStorage.getItem('expiration');
     const userIdRaw = localStorage.getItem('userId');
-    console.log(userIdRaw);
+
     if (!token || !expirationDateRaw || !userIdRaw) {
       return null;
     }

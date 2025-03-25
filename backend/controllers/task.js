@@ -39,7 +39,7 @@ exports.getTasks = (req, res) => {
 
 exports.deleteTask = (req, res) => {
   const taskId = req.query.taskId;
-console.log(taskId);
+
   var sql = "delete  from TASK where ID = ?";
 
   con.query(sql, [taskId], (error) => {
@@ -47,5 +47,19 @@ console.log(taskId);
     else {
       return res.status(201).json({ message: "Task deleted" });
     }
+  });
+};
+exports.checkTask = (req, res) => {
+  const taskId = req.body.taskId;
+  const checked = req.body.checked;
+
+  var sql = "update TASK set CHECKED = ? where ID = ?;";
+
+  con.query(sql, [checked, taskId], (error, response) => {
+    if (error) return res.status(520).json({ message: error.name });
+    else
+      return res.status(200).json({
+        message: "Task updated",
+      });
   });
 };

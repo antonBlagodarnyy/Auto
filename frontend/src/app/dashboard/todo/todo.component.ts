@@ -15,7 +15,7 @@ import { BehaviorSubject } from 'rxjs';
       <button (click)="addTask()">Añadir tarea</button>
     </form>
     <ul>
-      @for (task of tasks.getValue(); track task) {
+      @for (task of tasks.getValue(); track task.taskId) {
       <app-task
         [task]="task"
         (taskTogglesId)="onTaskToggled($event)"
@@ -63,17 +63,22 @@ export class TodoComponent implements OnInit {
   }
 
   onTaskToggled(taskId: number) {
-    this.tasks = this.tasks.map<Task>((taskFiltered) => {
+    let tasks = this.tasks.getValue();
+    tasks.map((taskFiltered) => {
       if (taskFiltered.taskId == taskId) {
-        taskFiltered.checked = !taskFiltered.checked;
+        this.todoService
+          .checkTask(taskFiltered.taskId, !taskFiltered.checked)
+          .subscribe({
+            next: () => {
+              this.updateTasks();
+            },
+          });
       }
-      return taskFiltered;
     });
   }
 
   onTaskDelete(taskId: number) {
     console.log('ontaskdelete');
-    this.todoService.deleteTask(taskId).subscribe();
-    this.updateTasks();
+    this.todoService.deleteTask(taskId).subscribe(() => this.updateTasks());
   }
 }

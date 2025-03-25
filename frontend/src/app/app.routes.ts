@@ -4,7 +4,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthGuard } from './Auth/auth.guard';
 import { LoginComponent } from './Auth/login/login.component';
 import { SignupComponent } from './Auth/signup/signup.component';
-import { TodoComponent } from './dashboard/todo/todo.component';
+import { StoreComponent } from './dashboard/store/store.component';
+import { CalendarComponent } from './dashboard/calendar/calendar.component';
+import { ClientsComponent } from './dashboard/clients/clients.component';
 
 export const routes: Routes = [
   { path: '', component: WelcomeComponent },
@@ -13,7 +15,9 @@ export const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard],
     children: [
-      {path:'todo', component: TodoComponent}
+      {path:'calendar', component: CalendarComponent},
+      {path:'store', component: StoreComponent},
+      {path:'clients', component: ClientsComponent}
     ]
   },
   {

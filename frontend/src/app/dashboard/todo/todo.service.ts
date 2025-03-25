@@ -45,4 +45,10 @@ export class TodoService {
       { params: { taskId: taskId } }
     );
   }
+  checkTask(taskId: number, checked: boolean) {
+    return this.http.put<{ message: string }>(
+      environment.apiUrl + '/task/check',
+      { taskId: taskId, checked: checked }
+    );
+  }
 }

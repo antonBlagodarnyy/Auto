@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { AuthService } from '../../Auth/Auth.service';
+import { Task } from './task/task.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,12 +15,7 @@ export class TodoService {
     if (userId) {
       const taskData = { userId: userId, content: content, checked: checked };
       return this.http.post<{
-        task: {
-          taskId: number;
-          userId: number;
-          content: string;
-          checked: boolean;
-        };
+        task: Task;
       }>(environment.apiUrl + '/task/create', taskData);
     } else {
       return null;
@@ -30,21 +26,18 @@ export class TodoService {
     const userId = this.authService.user.getValue()?.userId;
     if (userId != null || userId != undefined) {
       return this.http.get<{
-        results: {
-          ID: number;
-          USER_ID: number;
-          CONTENT: string;
-          CHECKED: boolean;
-        }[];
+        results: Task[];
       }>(environment.apiUrl + '/task/get', { params: { userId: userId } });
     } else return null;
   }
+
   deleteTask(taskId: number) {
     return this.http.delete<{ message: string }>(
       environment.apiUrl + '/task/delete',
       { params: { taskId: taskId } }
     );
   }
+  
   checkTask(taskId: number, checked: boolean) {
     return this.http.put<{ message: string }>(
       environment.apiUrl + '/task/check',

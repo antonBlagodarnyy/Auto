@@ -18,7 +18,7 @@ exports.createProduct = (req, res) => {
       else {
         return res.status(201).json({
           product: {
-            productId: result.insertId,
+            id: result.insertId,
             userId: userId,
             title: title,
             description: description,

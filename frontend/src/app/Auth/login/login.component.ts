@@ -11,8 +11,18 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule],
-  templateUrl: './login.component.html',
   styleUrl: '../auth.component.css',
+  template: ` <div class="container">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <label for="email">Email:</label>
+      <input id="email" type="text" formControlName="email" />
+
+      <label for="password">Password:</label>
+      <input id="password" type="password" formControlName="password" />
+
+      <button type="submit">Login</button>
+    </form>
+  </div>`,
 })
 export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}

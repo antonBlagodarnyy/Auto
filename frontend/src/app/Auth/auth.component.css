@@ -1,3 +1,8 @@
+.container{
+    margin-top: 10vh;
+    margin-left: 50%;
+   width: 30%;
+}
 form {
     display: flex;
     flex-direction: column;

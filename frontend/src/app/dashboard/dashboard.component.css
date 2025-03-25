@@ -1,4 +1,17 @@
 .container{
  display: grid;   
- grid-template-columns: 4fr 1fr;
+ grid-template-columns: 3fr 1fr;
+}
+.dashboard{
+    background-color: lightgray;
+    margin: 3vh;
+    padding: 3vh;
+    border-radius:1vh ;
+}
+.side-bar{
+    margin:3vh 0;
+    padding: 3vh;
+    border-top-left-radius: 1vh;
+    border-bottom-left-radius: 1vh;
+    background-color: lightgray;
 }

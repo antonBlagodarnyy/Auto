@@ -1,0 +1,17 @@
+app-product {
+  display: contents;
+}
+app-product-form{
+    padding: 2vh;
+}
+table,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+table {
+  width: 100%;
+}
+td {
+  padding: 2vh;
+}

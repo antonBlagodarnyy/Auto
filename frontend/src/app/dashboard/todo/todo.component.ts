@@ -15,7 +15,7 @@ import { BehaviorSubject } from 'rxjs';
       <button (click)="addTask()">Añadir tarea</button>
     </form>
     <ul>
-      @for (task of tasks.getValue(); track task.taskId) {
+      @for (task of tasks.getValue(); track task) {
       <app-task
         [task]="task"
         (taskTogglesId)="onTaskToggled($event)"
@@ -34,20 +34,11 @@ export class TodoComponent implements OnInit {
   }
 
   updateTasks() {
-    let tasksArr: Task[] = [];
     this.todoService.getTasks()?.subscribe((tasks) => {
-      tasks.results.map((taskRaw) => {
-        tasksArr.push({
-          taskId: taskRaw.ID,
-          userId: taskRaw.USER_ID,
-          content: taskRaw.CONTENT,
-          checked: taskRaw.CHECKED,
-        });
-      });
+      this.tasks.next(tasks.results);
+      
     });
-    this.tasks.next(tasksArr);
   }
-
   addTask() {
     if (
       this.form.value.taskContent != null &&

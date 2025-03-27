@@ -15,7 +15,7 @@ export class StoreService {
     if (userId) {
       return this.http.get<{
         results: Product[];
-      }>(environment.apiUrl + 'store/get', { params: { userId: userId } });
+      }>(environment.apiUrl + '/store/get', { params: { userId: userId } });
     } else return null;
   }
 
@@ -43,7 +43,7 @@ export class StoreService {
           stock: number;
           price: number;
         };
-      }>(environment.apiUrl + '/task/create', productData);
+      }>(environment.apiUrl + '/store/create', productData);
     } else {
       return null;
     }

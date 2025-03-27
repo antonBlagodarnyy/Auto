@@ -39,8 +39,18 @@ exports.getProducts = (req, res) => {
   con.query(sql, [userId], (error, result) => {
     if (error) return res.status(520).json({ error: error.name });
     else {
+      let products = [];
+      result.forEach((e) => {
+        products.push({
+          id: e.ID,
+          title: e.TITLE,
+          description: e.DESCRIPTION,
+          stock: e.STOCK,
+          price: e.PRICE,
+        });
+      });
       return res.status(201).json({
-        results: result,
+        results: products,
       });
     }
   });

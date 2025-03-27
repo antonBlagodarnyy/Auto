@@ -30,8 +30,17 @@ exports.getTasks = (req, res) => {
   con.query(sql, [userId], (error, result) => {
     if (error) return res.status(520).json({ error: error.name });
     else {
+      let tasks = [];
+      result.forEach((e) => {
+        tasks.push({
+          taskId: e.ID,
+          userId: e.USER_ID,
+          content: e.CONTENT,
+          checked: e.CHECKED,
+        });
+      });
       return res.status(201).json({
-        results: result,
+        results: tasks,
       });
     }
   });

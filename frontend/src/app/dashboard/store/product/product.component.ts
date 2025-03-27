@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Product } from '../product.model';
 
 @Component({
@@ -9,10 +9,20 @@ import { Product } from '../product.model';
     <td>{{ product()?.description }}</td>
     <td>{{ product()?.stock }}</td>
     <td>{{ product()?.price }}</td>
-    <td><button>Edit</button><button>Delete</button></td>
+    <td>
+      <button>Edit</button
+      ><button (click)="deleteProduct(product()?.id)">Delete</button>
+    </td>
   </tr> `,
   styleUrl: '../store.component.css',
 })
 export class ProductComponent {
   product = input<Product>();
+  productDeleteId = output<number>();
+
+  deleteProduct(productId: number|undefined){
+    if(productId != undefined){
+      this.productDeleteId.emit(productId);
+    }
+  }
 }

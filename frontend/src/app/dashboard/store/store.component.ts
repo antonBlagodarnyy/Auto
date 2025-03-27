@@ -17,7 +17,7 @@ import { ProductComponent } from './product/product.component';
       </thead>
       <tbody>
         @for (product of products; track product) {
-        <app-product  [product]="product" />
+        <app-product [product]="product" (productDeleteId)="onProductDelete($event)" />
         }
       </tbody>
     </table>`,
@@ -25,8 +25,7 @@ import { ProductComponent } from './product/product.component';
 })
 export class StoreComponent implements OnInit {
   constructor(private storeService: StoreService) {}
-  ProductComponent = ProductComponent;
-
+  //TODO refactor products in to beahavioral subject
   products: Product[] = [];
 
   ngOnInit(): void {
@@ -37,5 +36,8 @@ export class StoreComponent implements OnInit {
   }
   objectKeys(obj: Product) {
     return Object.keys(obj);
+  }
+  onProductDelete(productId:number){
+
   }
 }

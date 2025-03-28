@@ -38,7 +38,6 @@ export class StoreService {
         product: {
           productId: number;
           title: string;
-        //TODO may be needed userId: number;
           description: string;
           stock: number;
           price: number;
@@ -49,5 +48,15 @@ export class StoreService {
     }
   }
 
-  //TODO add on delete
+  deleteProduct(id: number) {
+    const userId = this.authService.user.getValue()?.userId;
+    if (userId) {
+      return this.http.delete<{ message: string }>(
+        environment.apiUrl + '/store/delete',
+        { params: { productId: id } }
+      );
+    } else {
+      return null;
+    }
+  }
 }

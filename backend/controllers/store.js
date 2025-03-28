@@ -56,4 +56,15 @@ exports.getProducts = (req, res) => {
   });
 };
 
-//TODO add delete feature
+exports.deleteProduct = (req, res) => {
+  const id = req.query.productId;
+
+  var sql = "delete from product where ID = ?";
+
+  con.query(sql, [id], (error, result) => {
+    if (error) return res.status(520).json({ error: error.name });
+    else {
+      return res.status(201).json({ message: "Task deleted" });
+    }
+  });
+};

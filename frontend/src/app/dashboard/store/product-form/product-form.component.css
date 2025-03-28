@@ -1,0 +1,5 @@
+form {
+  column-span: all;
+  display: flex;
+  justify-content: space-around;
+}

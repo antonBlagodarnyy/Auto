@@ -1,23 +1,32 @@
-import { Component, Injector, input, OnInit } from '@angular/core';
+import { Component,  OnInit } from '@angular/core';
 import { StoreService } from './store.service';
 import { Product } from './product.model';
 import { ProductFormComponent } from './product-form/product-form.component';
 import { NgFor } from '@angular/common';
 import { ProductComponent } from './product/product.component';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-store',
   imports: [ProductFormComponent, NgFor, ProductComponent],
-  template: ` <app-product-form [mode]="'create'"></app-product-form>
+  template: ` <app-product-form
+      [mode]="'create'"
+      (createdOrUpdated)="updateProducts()"
+    ></app-product-form>
     <table>
       <thead>
         <tr>
-          <td *ngFor="let k of objectKeys(products[0] || {})">{{ k }}</td>
+          <td *ngFor="let k of objectKeys(products.getValue()[0] || {})">
+            {{ k }}
+          </td>
         </tr>
       </thead>
       <tbody>
-        @for (product of products; track product) {
-        <app-product [product]="product" (productDeleteId)="onProductDelete($event)" />
+        @for (product of products.getValue(); track product.id) {
+        <app-product
+          [product]="product"
+          (productDeleteId)="onProductDelete($event)"
+        />
         }
       </tbody>
     </table>`,
@@ -25,19 +34,24 @@ import { ProductComponent } from './product/product.component';
 })
 export class StoreComponent implements OnInit {
   constructor(private storeService: StoreService) {}
-  //TODO refactor products in to beahavioral subject
-  products: Product[] = [];
+  products = new BehaviorSubject<Product[]>([]);
 
   ngOnInit(): void {
-    this.storeService.getProducts()?.subscribe((products) => {
-      this.products = products.results;
-      console.log(products.results);
+    this.updateProducts();
+  }
+  updateProducts() {
+    this.storeService.getProducts()?.subscribe((product) => {
+      this.products.next(product.results);
     });
   }
   objectKeys(obj: Product) {
-    return Object.keys(obj);
+    let keys = Object.keys(obj);
+    keys = keys.filter((key) => key != 'id');
+    return keys;
   }
-  onProductDelete(productId:number){
-
+  onProductDelete(productId: number) {
+    this.storeService
+      .deleteProduct(productId)
+      ?.subscribe(() => this.updateProducts());
   }
 }

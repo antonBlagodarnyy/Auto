@@ -68,3 +68,34 @@ exports.deleteProduct = (req, res) => {
     }
   });
 };
+
+exports.updateProduct = (req, res) => {
+  const productId = req.body.productId;
+  const title = req.body.title;
+  const description = req.body.description;
+  const stock = req.body.stock;
+  const price = req.body.price;
+
+  var sql = `update PRODUCT
+     set TITLE = ?, DESCRIPTION = ?, STOCK = ?, PRICE = ?
+     where ID = ?`;
+
+  con.query(
+    sql,
+    [title, description, stock, price, productId],
+    (error, result) => {
+      if (error) return res.status(520).json({ error: error.name });
+      else {
+        return res.status(201).json({
+          product: {
+            id: result.insertId,
+            title: title,
+            description: description,
+            stock: stock,
+            price: price,
+          },
+        });
+      }
+    }
+  );
+};

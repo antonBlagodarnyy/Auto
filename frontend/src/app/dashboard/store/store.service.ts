@@ -59,4 +59,34 @@ export class StoreService {
       return null;
     }
   }
+
+  updateProduct(
+    id: number,
+    title: string,
+    description: string,
+    stock: number,
+    price: number
+  ) {
+    const userId = this.authService.user.getValue()?.userId;
+    if (userId) {
+      const productData = {
+        productId: id,
+        title: title,
+        description: description,
+        stock: stock,
+        price: price,
+      };
+      return this.http.put<{
+        product: {
+          productId: number;
+          title: string;
+          description: string;
+          stock: number;
+          price: number;
+        };
+      }>(environment.apiUrl + '/store/update', productData);
+    } else {
+      return null;
+    }
+  }
 }

@@ -1,14 +1,14 @@
-import { Component,  OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StoreService } from './store.service';
 import { Product } from './product.model';
 import { ProductFormComponent } from './product-form/product-form.component';
-import { NgFor } from '@angular/common';
+import { NgFor, TitleCasePipe } from '@angular/common';
 import { ProductComponent } from './product/product.component';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-store',
-  imports: [ProductFormComponent, NgFor, ProductComponent],
+  imports: [ProductFormComponent, NgFor, ProductComponent, TitleCasePipe],
   template: ` <app-product-form
       [mode]="'create'"
       (createdOrUpdated)="updateProducts()"
@@ -17,7 +17,7 @@ import { BehaviorSubject } from 'rxjs';
       <thead>
         <tr>
           <td *ngFor="let k of objectKeys(products.getValue()[0] || {})">
-            {{ k }}
+            {{ k | titlecase }}
           </td>
         </tr>
       </thead>
@@ -26,6 +26,7 @@ import { BehaviorSubject } from 'rxjs';
         <app-product
           [product]="product"
           (productDeleteId)="onProductDelete($event)"
+          (updated)="updateProducts()"
         />
         }
       </tbody>

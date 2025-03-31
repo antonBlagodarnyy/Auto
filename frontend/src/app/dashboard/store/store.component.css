@@ -12,7 +12,11 @@ td {
 table {
   width: 100%;
 }
+thead{
+  font-weight: bolder;
+}
 td {
   padding: 5vh;
+  text-align: center;
 }
 

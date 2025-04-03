@@ -34,9 +34,10 @@ import { BehaviorSubject } from 'rxjs';
   styleUrl: './store.component.css',
 })
 export class StoreComponent implements OnInit {
-  constructor(private storeService: StoreService) {}
   products = new BehaviorSubject<Product[]>([]);
 
+  constructor(private storeService: StoreService) {}
+  
   ngOnInit(): void {
     this.updateProducts();
   }

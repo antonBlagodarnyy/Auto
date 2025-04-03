@@ -12,52 +12,7 @@ import { Product } from '../product.model';
   selector: 'app-product-form',
   imports: [ReactiveFormsModule],
   styleUrl: './product-form.component.css',
-  template: `
-    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-      <div>
-        <label for="title">Title:</label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          formControlName="title"
-          [placeholder]="product()?.title ? product()?.title : ''"
-        />
-      </div>
-      <div>
-        <label for="description">Description:</label>
-        <input
-          id="description"
-          name="description"
-          type="text"
-          formControlName="description"
-          [placeholder]="product()?.description ? product()?.description : ''"
-        />
-      </div>
-      <div>
-        <label for="stock">Stock:</label>
-        <input
-          id="stock"
-          name="stock"
-          type="number"
-          formControlName="stock"
-          [placeholder]="product()?.stock ? product()?.stock : ''"
-        />
-      </div>
-      <div>
-        <label for="price">Price:</label>
-        <input
-          id="price"
-          name="price"
-          type="number"
-          step="any"
-          formControlName="price"
-          [placeholder]="product()?.price ? product()?.price : ''"
-        />
-      </div>
-      <button type="submit">Save</button>
-    </form>
-  `,
+  templateUrl: './product-form.component.html',
 })
 export class ProductFormComponent {
   constructor(private storeService: StoreService) {}
@@ -97,7 +52,7 @@ export class ProductFormComponent {
       }
     } else if (this.mode() == 'edit') {
       this.productId = this.product()?.id;
-      console.log(this.productId);
+
 
       let title = this.productForm.value.title
         ? this.productForm.value.title

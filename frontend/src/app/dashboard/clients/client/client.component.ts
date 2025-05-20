@@ -28,7 +28,7 @@ import { NgIf } from '@angular/common';
     <button (click)="toggleForm(client()?.id)">Cancel</button>
   </td>
 </tr>`,
-  styleUrl: '../clients.component.css'
+
 })
 export class ClientComponent {
   client = input<Client>();

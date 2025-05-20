@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Client } from './client.model';
 import { ClientFormComponent } from './client-form/client-form.component';
-import { ClientsService } from './clients.service';
+import { ClientService } from './client.service';
 import { NgFor, TitleCasePipe } from '@angular/common';
 import { ClientComponent } from './client/client.component';
 
 @Component({
-  selector: 'app-clients',
+  selector: 'app-client',
   imports: [ClientFormComponent, TitleCasePipe, NgFor, ClientComponent],
   template: ` <app-client-form
       [mode]="'create'"
@@ -36,7 +36,7 @@ import { ClientComponent } from './client/client.component';
 export class ClientsComponent implements OnInit{
   clients = new BehaviorSubject<Client[]>([]);
 
-  constructor(private clientService: ClientsService) {}
+  constructor(private clientService: ClientService) {}
 
   ngOnInit(): void {
     this.updateClients();

@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ClientsService } from '../clients.service';
+import { ClientService } from '../client.service';
 import { Client } from '../client.model';
 
 @Component({
@@ -10,7 +10,7 @@ import { Client } from '../client.model';
   styleUrl: './client-form.component.css',
 })
 export class ClientFormComponent {
-  constructor(private clientService: ClientsService) {}
+  constructor(private clientService: ClientService) {}
   client = input<Client | undefined>();
   clientId: number | undefined = undefined;
 

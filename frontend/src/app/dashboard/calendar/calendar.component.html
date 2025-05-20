@@ -39,15 +39,19 @@
     <div class="schedule-headline">
       @if (activeDay(); as activeDay) {
       <div>{{ activeDay.toLocaleString(DATE_MED) }}</div>
+      <button (click)="switchAddMeeting()">Add meeting</button>
       }
     </div>
-    <div>
+    <div class="schedule-meetings">
+      <app-add-meeting *ngIf="this.showAddMeeting" (close)="switchAddMeeting()" (newMeeting)="createMeeting($event)"></app-add-meeting>
       @if(activeDay() && activeDayMeetings().length === 0){
       <div>No planned meetings</div>
-      } @if(activeDay() && activeDayMeetings().length > 0){ @for (meeting of
+      } @if(activeDay() && activeDayMeetings().length > 0){ 
+        @for (meeting of
       activeDayMeetings(); track $index){
       <div>{{ meeting }}</div>
       } }
+      
     </div>
   </div>
 </div>

@@ -1,9 +1,8 @@
-import { NgClass, NgIf } from '@angular/common';
+import { formatDate, NgClass, NgIf } from '@angular/common';
 import {
   Component,
   computed,
-  input,
-  InputSignal,
+  OnInit,
   signal,
   Signal,
   WritableSignal,
@@ -11,6 +10,7 @@ import {
 import { DateTime, Info, Interval } from 'luxon';
 import { Meetings } from './meeting.model';
 import { AddMeetingComponent } from './add-meeting/add-meeting.component';
+import { CalendarService } from './calendar.service';
 
 @Component({
   selector: 'app-calendar',
@@ -18,7 +18,10 @@ import { AddMeetingComponent } from './add-meeting/add-meeting.component';
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css',
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit {
+  constructor(private calendarService: CalendarService) {}
+
+
   showAddMeeting: boolean = false;
 
   meetings: Meetings = {};
@@ -59,9 +62,12 @@ export class CalendarComponent {
     if (!activeDayISO) {
       return [];
     }
-    return this.meetings[activeDayISO] ?? [];
-   
+    return this.meetings[formatDate(activeDayISO,'YYYY-MM-dd', "en_US")] ?? [];
   });
+
+    ngOnInit(): void {
+    this.updateMeetings();
+  }
 
   goToPreviousMonth(): void {
     this.firstDayOfActiveMonth.set(
@@ -79,20 +85,11 @@ export class CalendarComponent {
   switchAddMeeting() {
     this.showAddMeeting = !this.showAddMeeting;
   }
-  createMeeting(name: string) {
-    const activeDay = this.activeDay();
-    if (activeDay !== null) {
-      const activeDayISO = activeDay.toISODate();
-     
-      if(activeDayISO!==null)
-        if(!this.meetings[activeDayISO] ){
-          this.meetings[activeDayISO] = [];
-        } else{
-          this.meetings[activeDayISO].push(name);
-        }
+  updateMeetings() {
+    this.calendarService.getMeetings()?.subscribe((result) => {
+      this.meetings = result.results;
 
-        
-      }
-    }
-  
+    });
+    console.log(this.meetings)
+  }
 }

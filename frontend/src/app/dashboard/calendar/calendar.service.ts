@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { AuthService } from '../../Auth/Auth.service';
 import { Meetings } from './meeting.model';
 import { environment } from '../../../environments/environment.development';
+import { formatDate } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -14,17 +15,18 @@ export class CalendarService {
     const userId = this.authService.user.getValue()?.userId;
     if (userId) {
       return this.http.get<{
-        results: Meetings[];
+        results: Meetings;
       }>(environment.apiUrl + '/meeting/get', { params: { userId: userId } });
     } else return null;
   }
 
-  createMeeting(date: Date, name: string) {
+  createMeeting(date: string, name: string) {
     const userId = this.authService.user.getValue()?.userId;
+
     if (userId) {
       const meetingData = {
         userId: userId,
-        date: date.toDateString(),
+        dayOfMeeting: formatDate(date,'YYYY-MM-dd', "en_US"),
         name: name,
 
       };
@@ -32,8 +34,6 @@ export class CalendarService {
         meeting: {
           meetingId: number;
           userId: string;
-          phone: number;
-          dayOfMeeting: string;
         };
       }>(environment.apiUrl + '/meeting/create', meetingData);
     } else {

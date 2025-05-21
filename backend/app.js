@@ -18,6 +18,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/task", taskRoutes);
 app.use("/api/store", storeRoutes);
 app.use("/api/client", clientRoutes);
-app.use("api/meeting", meetingRoutes);
+app.use("/api/meeting", meetingRoutes);
 
 module.exports = app;

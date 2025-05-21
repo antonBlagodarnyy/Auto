@@ -1,15 +1,22 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  ReactiveFormsModule,
+  NgForm,
+  FormGroup,
+} from '@angular/forms';
+import { DateTime } from 'luxon';
+import { CalendarService } from '../calendar.service';
 
 @Component({
   selector: 'app-add-meeting',
   imports: [ReactiveFormsModule],
   template: ` <div class="modal-overlay" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
-      <form (ngSubmit)="addMeeting()">
+      <form [formGroup]="nameInput" (ngSubmit)="addMeeting()">
         <label for="name">Name:</label>
-        <input name="name" type="text" [formControl]="name" />
+        <input name="name" type="text" formControlName="name" />
         <button type="submit">Save</button>
       </form>
       <button (click)="closeModal()">Close</button>
@@ -18,15 +25,25 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
   styleUrl: './add-meeting.component.css',
 })
 export class AddMeetingComponent {
-  @Output() close = new EventEmitter<void>();
-  @Output() newMeeting = new EventEmitter<string>();
+  constructor(private calendarService: CalendarService) {}
 
-  name = new FormControl();
+  close = output();
+  activeDay = input<string>();
+
+  nameInput = new FormGroup({
+    name: new FormControl(),
+  });
 
   closeModal(): void {
     this.close.emit();
   }
   addMeeting(): void {
-    this.newMeeting.emit(this.name.value);
+    console.log(this.activeDay());
+    const activatedDay = this.activeDay();
+
+    if (activatedDay)
+      this.calendarService
+        .createMeeting(activatedDay, this.nameInput.get('name')?.value)
+        ?.subscribe();
   }
 }

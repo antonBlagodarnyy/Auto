@@ -6,11 +6,18 @@
         {{ firstDayOfActiveMonth().year }}
       </div>
       <div class="calendar-headline-controls">
-        <div class="calendar-headline-control" (click)="goToPreviousMonth()">&lt;&lt;</div>
-        <div class="calendar-headline-control calendar-headline-control-today" (click)="goToToday()">
+        <div class="calendar-headline-control" (click)="goToPreviousMonth()">
+          &lt;&lt;
+        </div>
+        <div
+          class="calendar-headline-control calendar-headline-control-today"
+          (click)="goToToday()"
+        >
           Today
         </div>
-        <div class="calendar-headline-control" (click)="goToNextMonth()">&gt;&gt;</div>
+        <div class="calendar-headline-control" (click)="goToNextMonth()">
+          &gt;&gt;
+        </div>
       </div>
     </div>
     <div class="calendar-weeks-grid">
@@ -40,18 +47,21 @@
       @if (activeDay(); as activeDay) {
       <div>{{ activeDay.toLocaleString(DATE_MED) }}</div>
       <button (click)="switchAddMeeting()">Add meeting</button>
+      <app-add-meeting
+        *ngIf="this.showAddMeeting"
+        (close)="switchAddMeeting()"
+        [activeDay]="(activeDay.toLocaleString(DATE_MED))"
+      ></app-add-meeting>
       }
     </div>
     <div class="schedule-meetings">
-      <app-add-meeting *ngIf="this.showAddMeeting" (close)="switchAddMeeting()" (newMeeting)="createMeeting($event)"></app-add-meeting>
       @if(activeDay() && activeDayMeetings().length === 0){
       <div>No planned meetings</div>
-      } @if(activeDay() && activeDayMeetings().length > 0){ 
-        @for (meeting of
+      } @if(activeDay() && activeDayMeetings().length > 0){ @for (meeting of
       activeDayMeetings(); track $index){
+
       <div>{{ meeting }}</div>
       } }
-      
     </div>
   </div>
 </div>

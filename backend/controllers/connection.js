@@ -6,4 +6,5 @@ module.exports = mysql.createConnection({
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
   port: process.env.DBPORT,
+  dateStrings: 'date'
 });

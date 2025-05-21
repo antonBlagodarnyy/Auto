@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ClientService } from '../client.service';
+import { ClientService } from '../clients.service';
 import { Client } from '../client.model';
 
 @Component({

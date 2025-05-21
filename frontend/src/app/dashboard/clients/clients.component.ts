@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Client } from './client.model';
 import { ClientFormComponent } from './client-form/client-form.component';
-import { ClientService } from './client.service';
+import { ClientService } from './clients.service';
 import { NgFor, TitleCasePipe } from '@angular/common';
 import { ClientComponent } from './client/client.component';
 
 @Component({
-  selector: 'app-client',
+  selector: 'app-clients',
   imports: [ClientFormComponent, TitleCasePipe, NgFor, ClientComponent],
   template: ` <app-client-form
       [mode]="'create'"

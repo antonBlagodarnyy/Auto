@@ -90,6 +90,6 @@ export class CalendarComponent implements OnInit {
       this.meetings = result.results;
 
     });
-    console.log(this.meetings)
+
   }
 }

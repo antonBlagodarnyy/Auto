@@ -42,8 +42,6 @@ export class AuthService {
               userId: userId,
             });
 
-     
-
             this.saveAuthData(token, expirationDate, userId);
             this.router.navigate(['/dashboard']);
           }
@@ -83,7 +81,7 @@ export class AuthService {
           }
         },
         error: (err) => {
-          console.log(err);
+          return err;
         },
       });
   }

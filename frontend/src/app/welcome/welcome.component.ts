@@ -5,11 +5,14 @@ import { RouterLink } from '@angular/router';
   selector: 'app-welcome',
   imports: [RouterLink],
   styleUrl: './welcome.component.css',
-  template: `<h1>Welcome to auto</h1>
-    <main style="display: flex; align-items: center;">
-      <img width="50%" src="/assets/a.jpg" />
-      <a routerLink="profile/login">Login</a>
-      <a routerLink="profile/signup">Signup</a>
-    </main> `,
+  template: `
+    <div class="container">
+      <h1 class="header">Welcome to Auto</h1>
+      <div class="container-auth">
+        <a routerLink="profile/login">Login</a>
+        <a routerLink="profile/signup">Signup</a>
+      </div>
+    </div>
+  `,
 })
 export class WelcomeComponent {}

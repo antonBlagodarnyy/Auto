@@ -1,28 +1,13 @@
+.container {
+  margin: auto;
+  width: 50vh;
+}
+.header {
+  text-align: center;
+}
+.container-auth {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
 
-.container{
-  margin:auto;
-  width:50vh;
-}
-.header{
-  text-align:center;
-}
-.container-auth{
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
-}
-a {
-    text-decoration: none;
-  cursor: pointer;
-  border: 0;
-  border-radius: 10%;
-  font-weight: 600;
-  margin: 3vh;
-  padding: 3vh;
-  box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
-  transition: 0.4s;
-}
-a:hover{
-    color: white;
-    background-color: lightskyblue;
-}

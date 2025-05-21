@@ -14,7 +14,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   constructor(private dialog: MatDialog) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
-    console.log("fun");
+
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
         let errorMessage = 'An unknown error occurred';

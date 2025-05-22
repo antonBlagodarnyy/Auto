@@ -1,40 +1,65 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Client } from './client.model';
 import { ClientFormComponent } from './client-form/client-form.component';
 import { ClientService } from './clients.service';
-import { NgFor, TitleCasePipe } from '@angular/common';
-import { ClientComponent } from './client/client.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-clients',
-  imports: [ClientFormComponent, TitleCasePipe, NgFor, ClientComponent],
+  imports: [
+    ClientFormComponent,
+    MatDialogModule,
+    MatTableModule,
+    MatButtonModule,
+  ],
   template: ` <app-client-form
-      [mode]="'create'"
       (createdOrUpdated)="updateClients()"
     ></app-client-form>
-    <table>
-      <thead>
-        <tr>
-          <td *ngFor="let k of objectKeys(clients.getValue()[0] || {})">
-            {{ k | titlecase }}
-          </td>
-        </tr>
-      </thead>
-      <tbody>
-        @for (client of clients.getValue(); track client.id) {
-        <app-client
-          [client]="client"
-          (clientDeleteId)="onClientDelete($event)"
-          (updated)="updateClients()"
-        />
-        }
-      </tbody>
+
+    <table mat-table [dataSource]="clients.getValue()">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let client">{{ client.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Phone</th>
+        <td mat-cell *matCellDef="let client">{{ client.phone }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let client">{{ client.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let client">
+          <button mat-button (click)="onClientDelete(client.id)">Delete</button>
+          <button
+            mat-button
+            (click)="
+              toggleForm(client.name, client.phone, client.email, client.id)
+            "
+          >
+            Edit
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
     </table>`,
-  styleUrl: './clients.component.css',
 })
-export class ClientsComponent implements OnInit{
+export class ClientsComponent implements OnInit {
   clients = new BehaviorSubject<Client[]>([]);
+
+  columnsToDisplay = ['name', 'phone', 'email', 'actions'];
+
+  editForm = inject(MatDialog);
 
   constructor(private clientService: ClientService) {}
 
@@ -46,14 +71,29 @@ export class ClientsComponent implements OnInit{
       this.clients.next(client.results);
     });
   }
-  objectKeys(obj: Client) {
-    let keys = Object.keys(obj);
-    keys = keys.filter((key) => key != 'id');
-    return keys;
-  }
+
   onClientDelete(clientId: number) {
     this.clientService
       .deleteClient(clientId)
       ?.subscribe(() => this.updateClients());
+  }
+  toggleForm(
+    clientName: string,
+    clientPhone: string,
+    clientEmail: string,
+    clientId: number
+  ) {
+    const dialogRef = this.editForm.open(ClientFormComponent, {
+      data: {
+        edit: true,
+        name: clientName,
+        phone: clientPhone,
+        email: clientEmail,
+        id: clientId,
+      },
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      this.updateClients();
+    });
   }
 }

@@ -1,20 +1,48 @@
-import { Component, input, output } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, input, output } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ClientService } from '../clients.service';
 import { Client } from '../client.model';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+
+export interface DialogData {
+  id: number;
+  edit: boolean;
+  name: string;
+  phone: string;
+  email: string;
+}
 
 @Component({
   selector: 'app-client-form',
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule,
+  ],
   templateUrl: './client-form.component.html',
   styleUrl: './client-form.component.css',
 })
 export class ClientFormComponent {
   constructor(private clientService: ClientService) {}
-  client = input<Client | undefined>();
-  clientId: number | undefined = undefined;
+  private dialogRef = inject(MatDialogRef, { optional: true });
+  data = inject<DialogData>(MAT_DIALOG_DATA, { optional: true });
 
-  mode = input<'edit' | 'create'>();
+  isDialog = !!this.dialogRef;
+
   createdOrUpdated = output();
 
   clientForm = new FormGroup({
@@ -23,47 +51,52 @@ export class ClientFormComponent {
     email: new FormControl('', Validators.email),
   });
 
+  ngOnInit() {
+    if (this.isDialog && this.data) {
+      // Initialize form with dialog data
+      this.clientForm.patchValue(this.data);
+    }
+  }
+
   onSubmit() {
-    if (this.mode() == 'create') {
-      if (
-        this.clientForm.valid &&
-        this.clientForm.value.name != undefined &&
-        this.clientForm.value.phone != undefined &&
-        this.clientForm.value.email != undefined
-      ) {
-        this.clientService
-          .createClient(
-            this.clientForm.value.name,
-            +this.clientForm.value.phone,
-            this.clientForm.value.email,
+    if (this.clientForm.valid) {
+      if (!this.data) {
+        if (
+          this.clientForm.value.name != undefined &&
+          this.clientForm.value.phone != undefined &&
+          this.clientForm.value.email != undefined
+        ) {
+          this.clientService
+            .createClient(
+              this.clientForm.value.name,
+              +this.clientForm.value.phone,
+              this.clientForm.value.email
+            )
+            ?.subscribe((client) => {
+              //TODO may be better to emit the product and update only one product
+              this.createdOrUpdated.emit();
+            });
+        }
+      } else {
+        let clientId = this.data?.id;
 
-          )
-          ?.subscribe((client) => {
-            //TODO may be better to emit the product and update only one product
-            this.createdOrUpdated.emit();
-          });
-      }
-    } else if (this.mode() == 'edit') {
-      this.clientId = this.client()?.id;
+        let name = this.clientForm.value.name
+          ? this.clientForm.value.name
+          : this.data?.name;
 
+        let phone = this.clientForm.value.phone
+          ? +this.clientForm.value.phone
+          : +this.data?.phone;
 
-      let name = this.clientForm.value.name
-        ? this.clientForm.value.name
-        : this.client()?.name;
+        let email = this.clientForm.value.email
+          ? this.clientForm.value.email
+          : this.data?.email;
 
-      let phone = this.clientForm.value.phone
-        ? +this.clientForm.value.phone
-        : this.client()?.phone;
-
-      let email = this.clientForm.value.email
-        ? this.clientForm.value.email
-        : this.client()?.email;
-
-
-      if (name && phone && email &&  this.clientId) {
-        this.clientService
-          .updateClient(this.clientId, name, phone, email)
-          ?.subscribe(() => this.createdOrUpdated.emit());
+        if (name && phone && email && clientId) {
+          this.clientService
+            .updateClient(clientId, name, phone, email)
+            ?.subscribe(() => this.dialogRef?.close());
+        }
       }
     }
   }

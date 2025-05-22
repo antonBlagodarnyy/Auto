@@ -1,33 +1,36 @@
 <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
-  <div>
-    <label for="name">Name:</label>
+  <mat-form-field>
+    <mat-label >Name:</mat-label>
     <input
+    matInput
       id="name"
       name="name"
       type="text"
       formControlName="name"
-      [placeholder]="client()?.name ? client()?.name : ''"
+
     />
-  </div>
-  <div>
-    <label for="phone">Phone:</label>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Phone:</mat-label>
     <input
+    matInput
       id="phone"
       name="phone"
       type="text"
       formControlName="phone"
-      [placeholder]="client()?.phone ? client()?.phone : ''"
+
     />
-  </div>
-  <div>
-    <label for="email">Email:</label>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Email:</mat-label>
     <input
+    matInput
       id="email"
       name="email"
       type="text"
       formControlName="email"
-      [placeholder]="client()?.email ? client()?.email : ''"
+
     />
-  </div>
-  <button type="submit">Save</button>
+  </mat-form-field>
+  <button mat-raised-button type="submit">Save</button>
 </form>

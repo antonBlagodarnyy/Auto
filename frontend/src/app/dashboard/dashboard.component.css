@@ -3,7 +3,7 @@
  grid-template-columns: 3fr 1fr;
 }
 .dashboard{
-    background-color: lightgray;
+    background-color: rgba(200, 200, 200, 0.5);
     margin: 3vh;
     padding: 3vh;
     border-radius:1vh ;
@@ -13,5 +13,5 @@
     padding: 3vh;
     border-top-left-radius: 1vh;
     border-bottom-left-radius: 1vh;
-    background-color: lightgray;
+    background-color: rgba(200, 200, 200, 0.5);
 }

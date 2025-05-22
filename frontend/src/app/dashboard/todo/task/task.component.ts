@@ -1,19 +1,26 @@
 import { Component, input, InputSignal, output } from '@angular/core';
 import { Task } from './task.model';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-task',
-  imports: [],
-  template: ` <li>
-    {{ task()?.content }}
-    <span
-      ><input
-        type="checkbox"
-        [checked]="task()?.checked"
-        (change)="toggleTask(task()?.taskId)" /></span
-    ><button (click)="deleteTask(task()?.taskId)">Eliminar tarea</button>
-  </li>`,
-  styleUrl: './task.component.css',
+  imports: [MatButtonModule, MatCheckboxModule],
+  template: `<div style="display:flex">
+    <span [class.checked]="task()?.checked">
+      {{ task()?.content }}
+    </span>
+    <span style="flex:1 1 auto"></span>
+    <button mat-stroked-button (click)="toggleTask(task()?.taskId)">
+      Check</button
+    ><button mat-raised-button (click)="deleteTask(task()?.taskId)">
+      Eliminar tarea
+    </button>
+  </div> `,
+  styles: `.checked{
+    color:grey;
+    text-decoration:line-through;
+  }`,
 })
 export class TaskComponent {
   task = input<Task>();

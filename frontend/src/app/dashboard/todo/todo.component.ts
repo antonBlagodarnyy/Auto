@@ -4,25 +4,40 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TaskComponent } from './task/task.component';
 import { TodoService } from './todo.service';
 import { BehaviorSubject } from 'rxjs';
+import { MatInputModule, MatLabel } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
 
 @Component({
   selector: 'app-todo',
-  imports: [ReactiveFormsModule, TaskComponent],
-  styleUrl: './todo.component.css',
-  template: `<div>Tasks:</div>
+  imports: [
+    ReactiveFormsModule,
+    TaskComponent,
+    MatLabel,
+    MatInputModule,
+    MatButtonModule,
+    MatListModule,
+  ],
+  template: `
     <form [formGroup]="form">
-      <input type="text" formControlName="taskContent" />
-      <button (click)="addTask()">Añadir tarea</button>
+      <mat-form-field>
+        <mat-label>Tasks</mat-label>
+        <input matInput id="tasks" type="text" formControlName="taskContent" />
+        <button mat-button (click)="addTask()">Añadir tarea</button>
+      </mat-form-field>
     </form>
-    <ul>
+    <mat-list>
       @for (task of tasks.getValue(); track task) {
-      <app-task
-        [task]="task"
-        (taskTogglesId)="onTaskToggled($event)"
-        (taskDeleteId)="onTaskDelete($event)"
-      ></app-task>
+      <mat-list-item>
+        <app-task
+          [task]="task"
+          (taskTogglesId)="onTaskToggled($event)"
+          (taskDeleteId)="onTaskDelete($event)"
+        ></app-task>
+      </mat-list-item>
       }
-    </ul> `,
+    </mat-list>
+  `,
 })
 export class TodoComponent implements OnInit {
   tasks = new BehaviorSubject<Task[]>([]);
@@ -36,7 +51,6 @@ export class TodoComponent implements OnInit {
   updateTasks() {
     this.todoService.getTasks()?.subscribe((tasks) => {
       this.tasks.next(tasks.results);
-      
     });
   }
   addTask() {

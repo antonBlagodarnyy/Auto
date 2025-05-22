@@ -2,10 +2,14 @@ import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { AuthGuard } from './Auth/auth.guard';
 import { AuthInterceptor } from './Auth/auth-interceptor';
-import {  ErrorInterceptor } from './error-handler.interceptor';
+import { ErrorInterceptor } from './error-handler.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +19,5 @@ export const appConfig: ApplicationConfig = {
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     AuthGuard,
-    
   ],
 };

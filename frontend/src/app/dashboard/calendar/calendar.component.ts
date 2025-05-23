@@ -9,7 +9,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { DateTime, Info, Interval } from 'luxon';
-import { Meetings } from './meeting.model';
+import { Meeting, Meetings } from './meeting.model';
 import { AddMeetingComponent } from './add-meeting/add-meeting.component';
 import { CalendarService } from './calendar.service';
 import { MatChipsModule } from '@angular/material/chips';
@@ -17,7 +17,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-calendar',
@@ -64,7 +63,7 @@ export class CalendarComponent implements OnInit {
 
   DATE_MED = DateTime.DATE_MED;
 
-  activeDayMeetings: Signal<string[]> = computed(() => {
+  activeDayMeetings: Signal<Meeting[]> = computed(() => {
     const activeDay = this.activeDay();
     if (activeDay === null) {
       return [];
@@ -100,7 +99,19 @@ export class CalendarComponent implements OnInit {
   addMeeting(activeDay: string) {
     const dialogRef = this.meetingForm.open(AddMeetingComponent, {
       data: {
+        mode: "create",
         activeDay: activeDay,
+      },
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      this.updateMeetings();
+    });
+  }
+  editMeeting(meetingId: number) {
+    const dialogRef = this.meetingForm.open(AddMeetingComponent, {
+      data: {
+        mode: "edit",
+        id: meetingId,
       },
     });
     dialogRef.afterClosed().subscribe(() => {
@@ -110,6 +121,11 @@ export class CalendarComponent implements OnInit {
   updateMeetings() {
     this.calendarService.getMeetings()?.subscribe((result) => {
       this.meetings.set(result.results);
+    });
+  }
+  deleteMeeting(meetingId: number) {
+    this.calendarService.deleteMeeting(meetingId)?.subscribe(() => {
+      this.updateMeetings();
     });
   }
 }

@@ -33,14 +33,47 @@ exports.getMeetings = (req, res) => {
       let meetings = {};
       result.forEach((e) => {
         if (!meetings[e.DAY_OF_MEETING]) {
-          meetings[e.DAY_OF_MEETING] = [e.NAME];
-        } else{
-          meetings[e.DAY_OF_MEETING].push(e.NAME)
+          meetings[e.DAY_OF_MEETING] = [{ id: e.ID, name: e.NAME}];
+        } else {
+          meetings[e.DAY_OF_MEETING].push({ id: e.ID, name: e.NAME });
         }
       });
-      console.log(meetings);
+
       return res.status(201).json({
         results: meetings,
+      });
+    }
+  });
+};
+exports.deleteMeeting = (req, res) => {
+  const id = req.query.meetingId;
+
+  var sql = "delete from MEETING where ID = ?";
+
+  con.query(sql, [id], (error, result) => {
+    if (error) return res.status(520).json({ error: error.name });
+    else {
+      return res.status(201).json({ message: "meeting deleted" });
+    }
+  });
+};
+
+exports.updateMeeting = (req, res) => {
+  const meetingId = req.body.meeting;
+  const name = req.body.name;
+
+  var sql = `update MEETING
+     set NAME = ?
+     where ID = ?`;
+
+  con.query(sql, [name, meetingId], (error, result) => {
+    if (error) return res.status(520).json({ error: error.name });
+    else {
+      return res.status(201).json({
+        product: {
+          id: result.insertId,
+          name: name,
+        },
       });
     }
   });

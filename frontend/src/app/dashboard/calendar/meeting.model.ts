@@ -1,3 +1,7 @@
 export interface Meetings {
-  [key: string]: string[];
+  [key: string]: Meeting[];
+}
+export interface Meeting {
+  id: number;
+  name: string;
 }

@@ -62,8 +62,8 @@
       <mat-list>
         @for (meeting of activeDayMeetings(); track $index){
         <mat-list-item>
-          <button mat-flat-button>Edit</button>
-          <button mat-flat-button>Delete</button><span>{{ meeting }}</span>
+          <button mat-flat-button (click)="editMeeting(meeting.id)">Edit</button>
+          <button mat-flat-button (click)="deleteMeeting(meeting.id)">Delete</button><span>{{ meeting.name }}</span>
         </mat-list-item>
         }
       </mat-list>

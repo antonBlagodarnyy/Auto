@@ -41,4 +41,37 @@ export class CalendarService {
     }
   }
 
+  deleteMeeting(id: number) {
+    const userId = this.authService.user.getValue()?.userId;
+    if (userId) {
+      return this.http.delete<{ message: string }>(
+        environment.apiUrl + '/meeting/delete',
+        { params: { meetingId: id } }
+      );
+    } else {
+      return null;
+    }
+  }
+  
+  updateMeeting(
+    id: number,
+    name: string,
+
+  ) {
+    const userId = this.authService.user.getValue()?.userId;
+    if (userId) {
+      const meetingData = {
+        meeting: id,
+        name: name,
+      };
+      return this.http.put<{
+        meeting: {
+          meetingId: number;
+          name: string;
+        };
+      }>(environment.apiUrl + '/meeting/update', meetingData);
+    } else {
+      return null;
+    }
+  }
 }

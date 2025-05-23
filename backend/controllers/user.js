@@ -35,7 +35,7 @@ exports.createUser = (req, res) => {
 exports.userLogin = (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  var sql = "SELECT * FROM user WHERE email = ?";
+  var sql = "select * from USER where EMAIL = ?";
   con.query(sql, [email], (error, result) => {
     if (result.length == 0) {
       return res

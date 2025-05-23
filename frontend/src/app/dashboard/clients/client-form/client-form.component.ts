@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -6,7 +6,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { ClientService } from '../clients.service';
-import { Client } from '../client.model';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,7 +33,11 @@ export interface DialogData {
     MatDialogModule,
   ],
   templateUrl: './client-form.component.html',
-  styleUrl: './client-form.component.css',
+  styles: `form {
+    display: flex;
+    justify-content: space-around;
+  }
+  `,
 })
 export class ClientFormComponent {
   constructor(private clientService: ClientService) {}

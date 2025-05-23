@@ -2,6 +2,7 @@ import { formatDate, NgClass, NgIf } from '@angular/common';
 import {
   Component,
   computed,
+  inject,
   OnInit,
   signal,
   Signal,
@@ -11,20 +12,31 @@ import { DateTime, Info, Interval } from 'luxon';
 import { Meetings } from './meeting.model';
 import { AddMeetingComponent } from './add-meeting/add-meeting.component';
 import { CalendarService } from './calendar.service';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-calendar',
-  imports: [NgClass, AddMeetingComponent, NgIf],
+  imports: [
+    NgClass,
+    MatChipsModule,
+    MatButtonModule,
+    MatListModule,
+    MatCardModule,
+  ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css',
 })
 export class CalendarComponent implements OnInit {
   constructor(private calendarService: CalendarService) {}
 
+  meetingForm = inject(MatDialog);
 
-  showAddMeeting: boolean = false;
-
-  meetings: Meetings = {};
+  meetings: WritableSignal<Meetings> = signal({});
 
   today: Signal<DateTime> = signal(DateTime.local());
 
@@ -62,10 +74,12 @@ export class CalendarComponent implements OnInit {
     if (!activeDayISO) {
       return [];
     }
-    return this.meetings[formatDate(activeDayISO,'YYYY-MM-dd', "en_US")] ?? [];
+    return (
+      this.meetings()[formatDate(activeDayISO, 'YYYY-MM-dd', 'en_US')] ?? []
+    );
   });
 
-    ngOnInit(): void {
+  ngOnInit(): void {
     this.updateMeetings();
   }
 
@@ -82,14 +96,20 @@ export class CalendarComponent implements OnInit {
   goToToday(): void {
     this.firstDayOfActiveMonth.set(this.today().startOf('month'));
   }
-  switchAddMeeting() {
-    this.showAddMeeting = !this.showAddMeeting;
+
+  addMeeting(activeDay: string) {
+    const dialogRef = this.meetingForm.open(AddMeetingComponent, {
+      data: {
+        activeDay: activeDay,
+      },
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      this.updateMeetings();
+    });
   }
   updateMeetings() {
     this.calendarService.getMeetings()?.subscribe((result) => {
-      this.meetings = result.results;
-
+      this.meetings.set(result.results);
     });
-
   }
 }

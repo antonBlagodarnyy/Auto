@@ -1,49 +1,65 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 
-import {
-  FormControl,
-  ReactiveFormsModule,
-  NgForm,
-  FormGroup,
-} from '@angular/forms';
-import { DateTime } from 'luxon';
+import { FormControl, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { CalendarService } from '../calendar.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+
+interface DialogData {
+  activeDay: string;
+}
 
 @Component({
   selector: 'app-add-meeting',
-  imports: [ReactiveFormsModule],
-  template: ` <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <form [formGroup]="nameInput" (ngSubmit)="addMeeting()">
-        <label for="name">Name:</label>
-        <input name="name" type="text" formControlName="name" />
-        <button type="submit">Save</button>
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule,
+  ],
+  template: `
+    <div (click)="$event.stopPropagation()">
+      <form [formGroup]="nameInput" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          <mat-label>Name:</mat-label>
+          <input matInput name="name" type="text" formControlName="name" />
+        </mat-form-field>
+        <button mat-button type="submit">Save</button>
       </form>
-      <button (click)="closeModal()">Close</button>
     </div>
-  </div>`,
-  styleUrl: './add-meeting.component.css',
+  `,
+  styles: `form {
+  display: flex;
+  justify-content: space-around;
+}`,
 })
 export class AddMeetingComponent {
   constructor(private calendarService: CalendarService) {}
-
+  private dialogRef = inject(MatDialogRef, { optional: true });
+  data = inject<DialogData>(MAT_DIALOG_DATA, { optional: true });
   close = output();
-  activeDay = input<string>();
 
   nameInput = new FormGroup({
     name: new FormControl(),
   });
 
-  closeModal(): void {
-    this.close.emit();
-  }
-  addMeeting(): void {
-    console.log(this.activeDay());
-    const activatedDay = this.activeDay();
-
-    if (activatedDay)
-      this.calendarService
-        .createMeeting(activatedDay, this.nameInput.get('name')?.value)
-        ?.subscribe();
+  onSubmit(): void {
+    if (this.nameInput.valid) {
+      const activeDay = this.data?.activeDay;
+      if (activeDay) {
+        this.calendarService
+          .createMeeting(activeDay, this.nameInput.get('name')?.value)
+          ?.subscribe(() => {
+            this.dialogRef?.close();
+          });
+      }
+    }
   }
 }

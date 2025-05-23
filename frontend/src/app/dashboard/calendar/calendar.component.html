@@ -42,26 +42,32 @@
       }
     </div>
   </div>
-  <div class="schedule">
-    <div class="schedule-headline">
+  <mat-card>
+    <mat-card-header class="schedule-headline">
       @if (activeDay(); as activeDay) {
-      <div>{{ activeDay.toLocaleString(DATE_MED) }}</div>
-      <button (click)="switchAddMeeting()">Add meeting</button>
-      <app-add-meeting
-        *ngIf="this.showAddMeeting"
-        (close)="switchAddMeeting()"
-        [activeDay]="(activeDay.toLocaleString(DATE_MED))"
-      ></app-add-meeting>
+      <mat-chip>{{ activeDay.toLocaleString(DATE_MED) }}</mat-chip>
+      <button
+        style="margin-left: 2vh"
+        mat-raised-button
+        (click)="addMeeting(activeDay.toLocaleString(DATE_MED))"
+      >
+        Add meeting
+      </button>
       }
-    </div>
-    <div class="schedule-meetings">
+    </mat-card-header>
+    <mat-card-content class="schedule-meetings">
       @if(activeDay() && activeDayMeetings().length === 0){
       <div>No planned meetings</div>
-      } @if(activeDay() && activeDayMeetings().length > 0){ @for (meeting of
-      activeDayMeetings(); track $index){
-
-      <div>{{ meeting }}</div>
-      } }
-    </div>
-  </div>
+      } @if(activeDay() && activeDayMeetings().length > 0){
+      <mat-list>
+        @for (meeting of activeDayMeetings(); track $index){
+        <mat-list-item>
+          <button mat-flat-button>Edit</button>
+          <button mat-flat-button>Delete</button><span>{{ meeting }}</span>
+        </mat-list-item>
+        }
+      </mat-list>
+      }
+    </mat-card-content>
+  </mat-card>
 </div>

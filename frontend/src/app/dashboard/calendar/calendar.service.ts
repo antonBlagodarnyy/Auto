@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '../../Auth/Auth.service';
 import { Meetings } from './meeting.model';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { formatDate } from '@angular/common';
 
 @Injectable({

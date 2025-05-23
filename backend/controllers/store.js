@@ -59,7 +59,7 @@ exports.getProducts = (req, res) => {
 exports.deleteProduct = (req, res) => {
   const id = req.query.productId;
 
-  var sql = "delete from product where ID = ?";
+  var sql = "delete from PRODUCT where ID = ?";
 
   con.query(sql, [id], (error, result) => {
     if (error) return res.status(520).json({ error: error.name });

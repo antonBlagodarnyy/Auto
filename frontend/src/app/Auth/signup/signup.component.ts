@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { passwordMatch } from './ValidationFunctions';
 import {
@@ -11,6 +10,8 @@ import { AuthService } from '../Auth.service';
 import { Router } from '@angular/router';
 import { MatError, MatInputModule, MatLabel } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { LoadingComponent } from '../../loading/loading.component';
 
 @Component({
   selector: 'app-signup',
@@ -25,7 +26,11 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: '../auth.component.css',
 })
 export class SignupComponent {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private dialog: MatDialog
+  ) {}
 
   registerForm = new FormGroup(
     {

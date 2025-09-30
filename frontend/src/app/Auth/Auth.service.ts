@@ -1,8 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { LoadingComponent } from '../loading/loading.component';
+import { L } from '@angular/cdk/keycodes';
 
 @Injectable({
   providedIn: 'root',
@@ -16,9 +19,20 @@ export class AuthService {
 
   private tokenTimer?: ReturnType<typeof setInterval> | null;
 
+  dialogRef = inject(MatDialog);
+
   constructor(private http: HttpClient, private router: Router) {}
 
   register(username: string, email: string, password: string) {
+    let loaderRef: MatDialogRef<LoadingComponent, any>;
+    let loaderTimeout: ReturnType<typeof setTimeout>;
+
+    loaderTimeout = setTimeout(() => {
+      loaderRef = this.dialogRef.open(LoadingComponent, {
+        disableClose: true,
+      });
+    }, 300);
+
     const authData = { username: username, email: email, password: password };
     this.http
       .post<{ token: string; expiresIn: number; userId: number }>(
@@ -47,11 +61,26 @@ export class AuthService {
           }
         },
         error: (err) => {
-          console.log(err);
+          clearTimeout(loaderTimeout);
+          loaderRef.close();
+          return err;
+        },
+        complete: () => {
+          clearTimeout(loaderTimeout);
+          loaderRef.close();
         },
       });
   }
   login(email: string, password: string) {
+    let loaderRef: MatDialogRef<LoadingComponent, any>;
+    let loaderTimeout: ReturnType<typeof setTimeout>;
+
+    loaderTimeout = setTimeout(() => {
+      loaderRef = this.dialogRef.open(LoadingComponent, {
+        disableClose: true,
+      });
+    }, 300);
+
     const authData = { email: email, password: password };
     this.http
       .post<{ token: string; expiresIn: number; userId: number }>(
@@ -81,7 +110,13 @@ export class AuthService {
           }
         },
         error: (err) => {
+          clearTimeout(loaderTimeout);
+          loaderRef?.close();
           return err;
+        },
+        complete: () => {
+          clearTimeout(loaderTimeout);
+          loaderRef?.close();
         },
       });
   }

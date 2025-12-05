@@ -1,17 +1,18 @@
 import { Component } from '@angular/core';
-import { passwordMatch } from './ValidationFunctions';
 import {
+  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../Auth.service';
+import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { MatError, MatInputModule, MatLabel } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { LoadingComponent } from '../../loading/loading.component';
 
 @Component({
   selector: 'app-signup',
@@ -23,7 +24,7 @@ import { LoadingComponent } from '../../loading/loading.component';
     MatError,
   ],
   templateUrl: './signup.component.html',
-  styleUrl: '../auth.component.css',
+  styleUrl: '../auth.component.scss',
 })
 export class SignupComponent {
   constructor(
@@ -32,6 +33,16 @@ export class SignupComponent {
     private dialog: MatDialog
   ) {}
 
+  passwordMatch: ValidatorFn = (
+    control: AbstractControl
+  ): ValidationErrors | null => {
+    const pass = control.get('password');
+    const passwordConfirm = control.get('passwordConfirm');
+    if (!pass || !passwordConfirm) return null;
+
+    return pass.value == passwordConfirm.value ? null : { passwordMatch: true };
+  };
+  
   registerForm = new FormGroup(
     {
       userName: new FormControl('', Validators.required),
@@ -39,7 +50,7 @@ export class SignupComponent {
       password: new FormControl('', Validators.required),
       passwordConfirm: new FormControl('', Validators.required),
     },
-    { validators: passwordMatch }
+    { validators: this.passwordMatch }
   );
 
   ngOnInit(): void {

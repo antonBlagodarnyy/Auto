@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthService } from '../../Auth/Auth.service';
-import { Meetings } from './meeting.model';
-import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
+import { Meetings } from '../dashboard/calendar/meeting.model';
+import { environment } from '../../environments/environment';
 import { formatDate } from '@angular/common';
 
 @Injectable({

@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Client } from './client.model';
 import { ClientFormComponent } from './client-form/client-form.component';
-import { ClientService } from './clients.service';
+import { ClientService } from '../../services/clients.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';

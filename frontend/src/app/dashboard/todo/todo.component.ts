@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Task } from './task/task.model';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TaskComponent } from './task/task.component';
-import { TodoService } from './todo.service';
+import { ITask } from '../../Interfaces/ITask';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { TodoService } from '../../services/todo.service';
 import { BehaviorSubject } from 'rxjs';
 import { MatInputModule, MatLabel } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,37 +15,54 @@ import { MatListModule } from '@angular/material/list';
 @Component({
   selector: 'app-todo',
   imports: [
-    ReactiveFormsModule,
-    TaskComponent,
+    FormsModule,
     MatLabel,
     MatInputModule,
     MatButtonModule,
     MatListModule,
   ],
   template: `
-    <form [formGroup]="form">
-      <mat-form-field>
-        <mat-label>Tasks</mat-label>
-        <input matInput id="tasks" type="text" formControlName="taskContent" />
-        <button mat-button (click)="addTask()">Añadir tarea</button>
-      </mat-form-field>
-    </form>
-    <mat-list>
-      @for (task of tasks.getValue(); track task) {
-      <mat-list-item>
-        <app-task
-          [task]="task"
-          (taskTogglesId)="onTaskToggled($event)"
-          (taskDeleteId)="onTaskDelete($event)"
-        ></app-task>
-      </mat-list-item>
-      }
-    </mat-list>
+    <div class="container">
+      <form>
+        <mat-form-field>
+          <mat-label>Tasks</mat-label>
+          <input
+            matInput
+            [(ngModel)]="taskContent"
+            name="taskContent"
+            type="text"
+          />
+          <button mat-button (click)="addTask()">Añadir tarea</button>
+        </mat-form-field>
+      </form>
+      <mat-list>
+        @for (task of tasks.getValue(); track task.taskId) {
+        <mat-list-item>
+          <span [class.checked]="task.checked">
+            {{ task.content }}
+          </span>
+          <span style="flex:1 1 auto"></span>
+          <button mat-stroked-button (click)="toggleTask(task.taskId)">
+            {{ task.checked ? 'Uncheck' : 'Check' }}</button
+          ><button mat-raised-button (click)="deleteTask(task.taskId)">
+            Eliminar tarea
+          </button>
+        </mat-list-item>
+        }
+      </mat-list>
+    </div>
   `,
+  styles: `.checked{
+    text-decoration: line-through;
+  }
+  .container{
+    padding:2vh;
+    background-color: var(--mat-sys-background);
+  }`,
 })
 export class TodoComponent implements OnInit {
-  tasks = new BehaviorSubject<Task[]>([]);
-  form = new FormGroup({ taskContent: new FormControl('') });
+  tasks = new BehaviorSubject<ITask[]>([]);
+  taskContent: string | undefined;
 
   constructor(private todoService: TodoService) {}
   ngOnInit(): void {
@@ -49,41 +70,35 @@ export class TodoComponent implements OnInit {
   }
 
   updateTasks() {
-    this.todoService.getTasks()?.subscribe((tasks) => {
+    this.todoService.getTasks$()?.subscribe((tasks) => {
       this.tasks.next(tasks.results);
     });
   }
   addTask() {
-    if (
-      this.form.value.taskContent != null &&
-      this.form.value.taskContent != ''
-    )
-      this.todoService
-        .createTask(this.form.value.taskContent, false)
-        ?.subscribe((task) => {
+    if (this.taskContent) {
+      const content = this.taskContent;
+      this.todoService.createTask$(content).subscribe({
+        next: (res) => {
           const currentTasks = this.tasks.getValue();
-          const updateTasks = [...currentTasks, task.task];
+          const updateTasks = [
+            ...currentTasks,
+            { content: content, taskId: res.taskId, checked: false },
+          ];
           this.tasks.next(updateTasks);
-        });
+        },
+      });
+    }
   }
 
-  onTaskToggled(taskId: number) {
-    let tasks = this.tasks.getValue();
-    tasks.map((taskFiltered) => {
-      if (taskFiltered.taskId == taskId) {
-        this.todoService
-          .checkTask(taskFiltered.taskId, !taskFiltered.checked)
-          .subscribe({
-            next: () => {
-              this.updateTasks();
-            },
-          });
-      }
+  toggleTask(taskId: number) {
+    this.todoService.checkTask$(taskId).subscribe({
+      next: () => {
+        this.updateTasks();
+      },
     });
   }
 
-  onTaskDelete(taskId: number) {
-    console.log('ontaskdelete');
+  deleteTask(taskId: number) {
     this.todoService.deleteTask(taskId).subscribe(() => this.updateTasks());
   }
 }

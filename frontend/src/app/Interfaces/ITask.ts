@@ -1,6 +1,5 @@
-export interface Task {
+export interface ITask {
   taskId: number;
-  userId: number;
   content: string;
   checked: boolean;
 }

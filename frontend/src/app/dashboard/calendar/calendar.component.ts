@@ -11,7 +11,7 @@ import {
 import { DateTime, Info, Interval } from 'luxon';
 import { Meeting, Meetings } from './meeting.model';
 import { AddMeetingComponent } from './add-meeting/add-meeting.component';
-import { CalendarService } from './calendar.service';
+import { CalendarService } from '../../services/calendar.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
@@ -28,7 +28,7 @@ import { MatDialog } from '@angular/material/dialog';
     MatCardModule,
   ],
   templateUrl: './calendar.component.html',
-  styleUrl: './calendar.component.css',
+  styleUrl: './calendar.component.scss',
 })
 export class CalendarComponent implements OnInit {
   constructor(private calendarService: CalendarService) {}

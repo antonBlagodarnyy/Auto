@@ -1,7 +1,7 @@
 import { Component, inject, input, output } from '@angular/core';
 
 import { FormControl, ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { CalendarService } from '../calendar.service';
+import { CalendarService } from '../../../services/calendar.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';

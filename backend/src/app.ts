@@ -1,12 +1,13 @@
-const express = require("express");
-require("dotenv").config();
-const cors = require("cors");
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+dotenv.config();
 
-const userRoutes = require("./routes/user");
-const taskRoutes = require("./routes/task");
-const storeRoutes = require("./routes/store");
-const clientRoutes = require("./routes/client");
-const meetingRoutes = require("./routes/meeting");
+import userRoutes from "./routes/users.js";
+import taskRoutes from "./routes/tasks.js";
+import storeRoutes from "./routes/store.js";
+import clientRoutes from "./routes/clients.js";
+import meetingRoutes from "./routes/meetings.js";
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL,process.env.DEV_URL],
+    origin: [process.env.CLIENT_URL!, process.env.DEV_URL!],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -28,4 +29,4 @@ app.use("/api/store", storeRoutes);
 app.use("/api/client", clientRoutes);
 app.use("/api/meeting", meetingRoutes);
 
-module.exports = app;
+export default app;

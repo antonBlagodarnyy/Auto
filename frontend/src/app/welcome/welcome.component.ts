@@ -5,13 +5,13 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-welcome',
   imports: [RouterLink, MatButtonModule],
-  styleUrl: './welcome.component.css',
+  styleUrl: './welcome.component.scss',
   template: `
     <div class="container">
-      <h1 class="header">Welcome to Auto</h1>
+      <h1 class="title">Welcome to <span>Auto</span></h1>
       <div class="container-auth">
-        <a mat-button routerLink="profile/login">Login</a>
-        <a mat-button routerLink="profile/signup">Signup</a>
+        <a mat-raised-button routerLink="profile/login">Login</a>
+        <a mat-raised-button routerLink="profile/signup">Signup</a>
       </div>
     </div>
   `,

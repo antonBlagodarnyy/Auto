@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { Client } from '../dashboard/clients/client.model';
+import { IClient } from '../Interfaces/IClient';
 import { environment } from '../../environments/environment';
+import { BehaviorSubject, map, switchMap, take, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,68 +11,84 @@ import { environment } from '../../environments/environment';
 export class ClientService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  getClients() {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
-      return this.http.get<{
-        results: Client[];
-      }>(environment.apiUrl + '/client/get', { params: { userId: userId } });
-    } else return null;
+  private clientsSubject = new BehaviorSubject<IClient[]>([]);
+
+  readonly clients$ = this.clientsSubject.asObservable();
+
+  setClients(clients: IClient[]) {
+    this.clientsSubject.next(clients);
   }
 
-  createClient(name: string, phone: number, email: string) {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
-      const clientData = {
-        userId: userId,
-        name: name,
-        phone: phone,
-        email: email,
-      };
-      return this.http.post<{
-        client: {
-          clientId: number;
-          name: string;
-          phone: number;
-          email: string;
-        };
-      }>(environment.apiUrl + '/client/create', clientData);
-    } else {
-      return null;
-    }
+  getStoredClients$() {
+    return this.http
+      .get<{
+        results: IClient[];
+      }>(environment.apiUrl + '/client/get')
+      .pipe(map((res) => this.setClients(res.results)));
   }
 
-  deleteClient(id: number) {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
-      return this.http.delete<{ message: string }>(
-        environment.apiUrl + '/client/delete',
-        { params: { productId: id } }
+  addNewClient$(newClient: { name: string; phone: number; email: string }) {
+    return this.http
+      .post<{
+        clientId: number;
+      }>(environment.apiUrl + '/client/create', newClient)
+      .pipe(
+        map((res) => {
+          const current = this.clientsSubject.value;
+          this.clientsSubject.next([
+            { id: res.clientId, ...newClient },
+            ...current,
+          ]);
+        })
       );
-    } else {
-      return null;
-    }
   }
 
-  updateClient(id: number, name: string, phone: number, email: string) {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
-      const clientData = {
-        clientId: id,
-        name: name,
-        phone: phone,
-        email: email,
-      };
-      return this.http.put<{
-        client: {
-          clientId: number;
-          name: string;
-          phone: number;
-          email: string;
-        };
-      }>(environment.apiUrl + '/client/update', clientData);
-    } else {
-      return null;
-    }
+  deleteClient$(clientId: number) {
+    return this.http
+      .delete(environment.apiUrl + '/client/delete', {
+        body: { clientId: clientId },
+        responseType: 'text',
+      })
+      .pipe(
+        switchMap(() => this.clientsSubject.pipe(take(1))),
+        tap((clients) => {
+          this.clientsSubject.next(clients.filter((c) => c.id !== clientId));
+        })
+      );
+  }
+
+  updateClient$(
+    clientId: number,
+    changedValues: { key: string; value: string }[]
+  ) {
+    return this.http
+      .put(
+        environment.apiUrl + '/client/update',
+        { clientId: clientId, changedValues: changedValues },
+        {
+          responseType: 'text',
+        }
+      )
+      .pipe(
+        tap(() => {
+          // Update local state directly
+          const clients = this.clientsSubject.value;
+          const updatedClients = clients.map((c) => {
+            if (c.id === clientId) {
+              return {
+                ...c,
+                ...Object.fromEntries(
+                  changedValues.map((cv) => [
+                    cv.key,
+                    cv.key === 'phone' ? +cv.value : cv.value,
+                  ])
+                ),
+              };
+            }
+            return c;
+          });
+          this.clientsSubject.next(updatedClients);
+        })
+      );
   }
 }

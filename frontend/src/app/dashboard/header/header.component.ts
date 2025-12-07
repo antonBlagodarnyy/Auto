@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { RouterLink } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { TodoComponent } from '../todo/todo.component';
 

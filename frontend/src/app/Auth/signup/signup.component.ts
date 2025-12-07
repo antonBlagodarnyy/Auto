@@ -12,7 +12,6 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { MatError, MatInputModule, MatLabel } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-signup',
@@ -30,7 +29,6 @@ export class SignupComponent {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private dialog: MatDialog
   ) {}
 
   passwordMatch: ValidatorFn = (
@@ -42,7 +40,7 @@ export class SignupComponent {
 
     return pass.value == passwordConfirm.value ? null : { passwordMatch: true };
   };
-  
+
   registerForm = new FormGroup(
     {
       userName: new FormControl('', Validators.required),
@@ -56,9 +54,10 @@ export class SignupComponent {
   ngOnInit(): void {
     this.authService.autoAuthUser();
 
-    if (this.authService.user.getValue()) {
-      this.router.navigate(['dashboard']);
-    }
+    //TODO create already-auth.guard
+    //if (this.authService.user.getValue()) {
+    //  this.router.navigate(['dashboard']);
+    //}
   }
 
   onSubmit() {

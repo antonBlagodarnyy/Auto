@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { AuthGuard } from './Auth/auth.guard';
-import { LoginComponent } from './Auth/login/login.component';
-import { SignupComponent } from './Auth/signup/signup.component';
+import { AuthGuard } from './auth/auth.guard';
+import { LoginComponent } from './auth/login/login.component';
+import { SignupComponent } from './auth/signup/signup.component';
 import { StoreComponent } from './dashboard/store/store.component';
 import { CalendarComponent } from './dashboard/calendar/calendar.component';
 import { ClientsComponent } from './dashboard/clients/clients.component';

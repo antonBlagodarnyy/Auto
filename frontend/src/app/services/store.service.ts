@@ -1,22 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { environment } from '../../../environments/environment';
-import { Product } from './product.model';
+import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
+import { Product } from '../dashboard/store/product.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StoreService {
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
   getProducts() {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
       return this.http.get<{
         results: Product[];
-      }>(environment.apiUrl + '/store/get', { params: { userId: userId } });
-    } else return null;
+      }>(environment.apiUrl + '/store/get');
+ 
   }
 
   createProduct(
@@ -25,10 +23,7 @@ export class StoreService {
     stock: number,
     price: number
   ) {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
       const productData = {
-        userId: userId,
         title: title,
         description: description,
         stock: stock,
@@ -43,21 +38,14 @@ export class StoreService {
           price: number;
         };
       }>(environment.apiUrl + '/store/create', productData);
-    } else {
-      return null;
-    }
   }
 
   deleteProduct(id: number) {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
+
       return this.http.delete<{ message: string }>(
         environment.apiUrl + '/store/delete',
         { params: { productId: id } }
       );
-    } else {
-      return null;
-    }
   }
 
   updateProduct(
@@ -67,8 +55,6 @@ export class StoreService {
     stock: number,
     price: number
   ) {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
       const productData = {
         productId: id,
         title: title,
@@ -85,8 +71,5 @@ export class StoreService {
           price: number;
         };
       }>(environment.apiUrl + '/store/update', productData);
-    } else {
-      return null;
-    }
   }
 }

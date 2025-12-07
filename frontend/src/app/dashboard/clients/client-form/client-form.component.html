@@ -1,36 +1,50 @@
 <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
-  <mat-form-field>
-    <mat-label >Name:</mat-label>
+  <mat-form-field appearance="outline" hintLabel="Max 20 characters">
+    <mat-label>Name:</mat-label>
     <input
-    matInput
+      matInput
       id="name"
       name="name"
+      maxlength="20"
       type="text"
       formControlName="name"
-
     />
+    <mat-hint align="end">{{ clientForm.value.name?.length }}/20</mat-hint>
+    <mat-error>Name is required</mat-error>
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field appearance="outline" floatLabel="always"  hintLabel="Should be a Spain number">
     <mat-label>Phone:</mat-label>
+    <span matTextPrefix>+34-</span>
     <input
-    matInput
+      matInput
       id="phone"
       name="phone"
       type="text"
+      maxlength="9"
       formControlName="phone"
-
     />
+    <mat-error>
+      @switch(true){ @case(clientForm.get("phone")?.hasError("required")){
+      {{ "Phone is requiered" }}
+      } @case (clientForm.get("phone")?.hasError("pattern"))
+      {{{ "The field must be a valid Spain phone number" }}}}
+    </mat-error>
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field appearance="outline" hintLabel="Any Email">
     <mat-label>Email:</mat-label>
     <input
-    matInput
+      matInput
       id="email"
       name="email"
       type="text"
       formControlName="email"
-
     />
+    <mat-error>
+      @switch(true){ @case(clientForm.get("email")?.hasError("required")){
+      {{ "Email is requiered" }}
+      } @case (clientForm.get("email")?.hasError("email"))
+      {{{ "The field must be a valid email" }}}}
+    </mat-error>
   </mat-form-field>
   <button mat-raised-button type="submit">Save</button>
 </form>

@@ -1,64 +1,72 @@
 import { Component, OnInit } from '@angular/core';
 import { ITask } from '../../Interfaces/ITask';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { TodoService } from '../../services/todo.service';
 import { BehaviorSubject } from 'rxjs';
-import { MatInputModule, MatLabel } from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-todo',
   imports: [
     FormsModule,
-    MatLabel,
     MatInputModule,
     MatButtonModule,
-    MatListModule,
+    MatIconModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatDividerModule,
   ],
   template: `
     <div class="container">
-      <form>
-        <mat-form-field>
+      <form matDialogTitle (ngSubmit)="addTask()">
+        <mat-form-field appearance="outline" hintLabel="Max 20 characters">
           <mat-label>Tasks</mat-label>
           <input
             matInput
             [(ngModel)]="taskContent"
             name="taskContent"
             type="text"
+            maxlength="20"
           />
-          <button mat-button (click)="addTask()">Añadir tarea</button>
         </mat-form-field>
+        <button class="button-submit" mat-button type="submit">Add task</button>
       </form>
-      <mat-list>
-        @for (task of tasks.getValue(); track task.taskId) {
-        <mat-list-item>
-          <span [class.checked]="task.checked">
+      <mat-dialog-content>
+        @for (task of tasks.getValue(); track $index) {
+        <div class="container-task">
+          <mat-checkbox
+            [checked]="task.checked"
+            (change)="toggleTask(task.taskId)"
+          >
             {{ task.content }}
-          </span>
-          <span style="flex:1 1 auto"></span>
-          <button mat-stroked-button (click)="toggleTask(task.taskId)">
-            {{ task.checked ? 'Uncheck' : 'Check' }}</button
-          ><button mat-raised-button (click)="deleteTask(task.taskId)">
-            Eliminar tarea
+          </mat-checkbox>
+
+          <button mat-mini-fab (click)="deleteTask(task.taskId)">
+            <mat-icon fontIcon="delete" />
           </button>
-        </mat-list-item>
-        }
-      </mat-list>
+        </div>
+        @if($index+1 != tasks.getValue().length){
+        <mat-divider></mat-divider>
+        } }
+      </mat-dialog-content>
     </div>
   `,
-  styles: `.checked{
-    text-decoration: line-through;
-  }
+  styles: `
   .container{
     padding:2vh;
-    background-color: var(--mat-sys-background);
-  }`,
+    
+  }
+  .container-task{
+    padding:2vh;
+   display:flex;
+   justify-content:space-between;
+  }
+  `,
 })
 export class TodoComponent implements OnInit {
   tasks = new BehaviorSubject<ITask[]>([]);
@@ -85,6 +93,7 @@ export class TodoComponent implements OnInit {
             { content: content, taskId: res.taskId, checked: false },
           ];
           this.tasks.next(updateTasks);
+          this.taskContent = undefined;
         },
       });
     }
@@ -99,6 +108,6 @@ export class TodoComponent implements OnInit {
   }
 
   deleteTask(taskId: number) {
-    this.todoService.deleteTask(taskId).subscribe(() => this.updateTasks());
+    this.todoService.deleteTask$(taskId).subscribe(() => this.updateTasks());
   }
 }

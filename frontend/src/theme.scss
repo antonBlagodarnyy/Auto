@@ -1,10 +1,37 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
-html {
+@include mat.core();
+
+$theme: mat.define-theme(
+  (
+    color: (
+      primary: mat.$cyan-palette,
+      tertiary: mat.$spring-green-palette,
+    ),
+    typography: (
+      plain-family: Roboto,
+      bold-weight: 900,
+      medium-weight: 500,
+      regular-weight: 300,
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
+
+:root {
   color-scheme: light dark;
-  @include mat.theme((
-    color: mat.$violet-palette,
-    typography: Roboto,
-    density: 0
-  ));
+  @include mat.all-component-themes($theme);
+  @include mat.typography-hierarchy($theme);
+  @include mat.fab-overrides(
+    (
+      small-container-color: var(--mat-sys-primary-container),
+    )
+  );
+  @include mat.snack-bar-overrides(
+    (
+      container-color: mat.get-theme-color($theme, primary, 10),
+    )
+  );
 }

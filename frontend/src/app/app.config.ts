@@ -7,8 +7,8 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
-import { AuthGuard } from './Auth/auth.guard';
-import { AuthInterceptor } from './Auth/auth-interceptor';
+import { AuthGuard } from './auth/auth.guard';
+import { AuthInterceptor } from './auth/auth-interceptor';
 import { ErrorInterceptor } from './error-handler.interceptor';
 
 export const appConfig: ApplicationConfig = {

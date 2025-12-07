@@ -6,72 +6,47 @@ import { environment } from '../../environments/environment';
 import { formatDate } from '@angular/common';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CalendarService {
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
   getMeetings() {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
-      return this.http.get<{
-        results: Meetings;
-      }>(environment.apiUrl + '/meeting/get', { params: { userId: userId } });
-    } else return null;
+    return this.http.get<{
+      results: Meetings;
+    }>(environment.apiUrl + '/meeting/get');
   }
 
   createMeeting(date: string, name: string) {
-    const userId = this.authService.user.getValue()?.userId;
-
-    if (userId) {
-      const meetingData = {
-        userId: userId,
-        dayOfMeeting: formatDate(date,'YYYY-MM-dd', "en_US"),
-        name: name,
-
+    const meetingData = {
+      dayOfMeeting: formatDate(date, 'YYYY-MM-dd', 'en_US'),
+      name: name,
+    };
+    return this.http.post<{
+      meeting: {
+        meetingId: number;
+        userId: string;
       };
-      return this.http.post<{
-        meeting: {
-          meetingId: number;
-          userId: string;
-        };
-      }>(environment.apiUrl + '/meeting/create', meetingData);
-    } else {
-      return null;
-    }
+    }>(environment.apiUrl + '/meeting/create', meetingData);
   }
 
   deleteMeeting(id: number) {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
-      return this.http.delete<{ message: string }>(
-        environment.apiUrl + '/meeting/delete',
-        { params: { meetingId: id } }
-      );
-    } else {
-      return null;
-    }
+    return this.http.delete<{ message: string }>(
+      environment.apiUrl + '/meeting/delete',
+      { params: { meetingId: id } }
+    );
   }
-  
-  updateMeeting(
-    id: number,
-    name: string,
 
-  ) {
-    const userId = this.authService.user.getValue()?.userId;
-    if (userId) {
-      const meetingData = {
-        meeting: id,
-        name: name,
+  updateMeeting(id: number, name: string) {
+    const meetingData = {
+      meeting: id,
+      name: name,
+    };
+    return this.http.put<{
+      meeting: {
+        meetingId: number;
+        name: string;
       };
-      return this.http.put<{
-        meeting: {
-          meetingId: number;
-          name: string;
-        };
-      }>(environment.apiUrl + '/meeting/update', meetingData);
-    } else {
-      return null;
-    }
+    }>(environment.apiUrl + '/meeting/update', meetingData);
   }
 }

@@ -25,9 +25,9 @@ export class LoginComponent {
   ngOnInit(): void {
     this.authService.autoAuthUser();
 
-    if (this.authService.user.getValue()) {
-      this.router.navigate(['dashboard']);
-    }
+    //if (this.authService.user.getValue()) {
+    //  this.router.navigate(['dashboard']);
+    //}
   }
   onSubmit() {
     if (!this.loginForm.invalid) {

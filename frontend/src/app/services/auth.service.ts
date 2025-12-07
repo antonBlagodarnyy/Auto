@@ -10,11 +10,13 @@ import { LoadingComponent } from '../loading/loading.component';
   providedIn: 'root',
 })
 export class AuthService {
-  user = new BehaviorSubject<{
+  private userSubject = new BehaviorSubject<{
     token: string;
     expirationDate: Date;
     userId: number;
   } | null>(null);
+
+  readonly user$ = this.userSubject.asObservable();
 
   private tokenTimer?: ReturnType<typeof setInterval> | null;
 
@@ -49,7 +51,7 @@ export class AuthService {
 
             const now = new Date();
             const expirationDate = new Date(now.getTime() + expiresIn * 1000);
-            this.user.next({
+            this.userSubject.next({
               token: token,
               expirationDate: expirationDate,
               userId: userId,
@@ -98,7 +100,7 @@ export class AuthService {
             const expirationDate = new Date(
               now.getTime() + expiresInDuration * 1000
             );
-            this.user.next({
+            this.userSubject.next({
               token: token,
               expirationDate: expirationDate,
               userId: userId,
@@ -122,18 +124,18 @@ export class AuthService {
   autoAuthUser() {
     const authInformation = this.getAuthData();
     if (!authInformation) {
-      this.user.next(null);
+      this.userSubject.next(null);
       return;
     }
     const now = new Date();
     const expiresIn = authInformation.expirationDate.getTime() - now.getTime();
     if (expiresIn > 0) {
-      this.user.next(authInformation);
+      this.userSubject.next(authInformation);
       this.setAuthTimer(expiresIn / 1000);
     }
   }
   logout() {
-    this.user.next(null);
+    this.userSubject.next(null);
     this.clearAuthData();
     this.router.navigate(['/']);
   }

@@ -5,7 +5,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { StoreService } from '../store.service';
+import { StoreService } from '../../../services/store.service';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,

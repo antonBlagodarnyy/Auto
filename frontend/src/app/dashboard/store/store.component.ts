@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { StoreService } from './store.service';
+import { StoreService } from '../../services/store.service';
 import { Product } from './product.model';
 import { ProductFormComponent } from './product-form/product-form.component';
 import { BehaviorSubject } from 'rxjs';

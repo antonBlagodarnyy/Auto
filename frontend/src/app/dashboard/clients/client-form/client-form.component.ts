@@ -5,7 +5,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ClientService } from '../../../services/clients.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,13 +13,13 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-export interface DialogData {
+interface DialogData {
   id: number;
-  edit: boolean;
   name: string;
-  phone: string;
   email: string;
+  phone: string;
 }
 
 @Component({
@@ -34,71 +33,87 @@ export interface DialogData {
   ],
   templateUrl: './client-form.component.html',
   styles: `form {
+  
+    padding: 2vh;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    align-items: center;
+  }
+  mat-form-field{
+  padding:2vh;
   }
   `,
 })
 export class ClientFormComponent {
-  constructor(private clientService: ClientService) {}
-  private dialogRef = inject(MatDialogRef, { optional: true });
-  data = inject<DialogData>(MAT_DIALOG_DATA, { optional: true });
+  constructor(private snackBar: MatSnackBar) {}
+  //Dependency injections
+  private dialogRef = inject(MatDialogRef<ClientFormComponent>, {
+    optional: true,
+  });
+  readonly dialogData = inject<DialogData>(MAT_DIALOG_DATA, {
+    optional: true,
+  });
+  //Outputs
+  createdEvent = output<{ name: string; phone: number; email: string }>();
 
-  isDialog = !!this.dialogRef;
+  //Should be edited or created
+  editMode: boolean = !!this.dialogRef;
 
-  createdOrUpdated = output();
-
+  //Form validatos
   clientForm = new FormGroup({
     name: new FormControl('', Validators.required),
-    phone: new FormControl('', Validators.pattern('')), //TODO meter regex telefono
-    email: new FormControl('', Validators.email),
+    phone: new FormControl('', [
+      Validators.pattern('^[6-9]\\d{8}$'),
+      Validators.required,
+    ]),
+    email: new FormControl('', [Validators.email, Validators.required]),
   });
 
   ngOnInit() {
-    if (this.isDialog && this.data) {
+    if (this.editMode && this.dialogData) {
       // Initialize form with dialog data
-      this.clientForm.patchValue(this.data);
+      this.clientForm.patchValue(this.dialogData);
     }
   }
 
   onSubmit() {
     if (this.clientForm.valid) {
-      if (!this.data) {
-        if (
-          this.clientForm.value.name != undefined &&
-          this.clientForm.value.phone != undefined &&
-          this.clientForm.value.email != undefined
-        ) {
-          this.clientService
-            .createClient(
-              this.clientForm.value.name,
-              +this.clientForm.value.phone,
-              this.clientForm.value.email
-            )
-            ?.subscribe((client) => {
-              //TODO may be better to emit the product and update only one product
-              this.createdOrUpdated.emit();
-            });
+      if (!this.editMode) {
+        const { name, phone, email } = this.clientForm.value;
+        if (name && phone && email) {
+          this.createdEvent.emit({
+            name: name,
+            phone: +phone,
+            email: email,
+          });
         }
       } else {
-        let clientId = this.data?.id;
+        if (this.dialogData) {
+          const oldClient = this.dialogData;
 
-        let name = this.clientForm.value.name
-          ? this.clientForm.value.name
-          : this.data?.name;
+          const newValues = this.clientForm.value;
 
-        let phone = this.clientForm.value.phone
-          ? +this.clientForm.value.phone
-          : +this.data?.phone;
+          if (
+            oldClient.email != newValues.email ||
+            oldClient.name != newValues.name ||
+            oldClient.phone != newValues.phone
+          ) {
+            const changedValues = [];
+            if (newValues.name && oldClient.name != newValues.name)
+              changedValues.push({ key: 'name', value: newValues.name });
+            if (newValues.email && oldClient.email != newValues.email)
+              changedValues.push({ key: 'email', value: newValues.email });
+            if (newValues.phone && oldClient.phone != newValues.phone)
+              changedValues.push({ key: 'phone', value: newValues.phone });
 
-        let email = this.clientForm.value.email
-          ? this.clientForm.value.email
-          : this.data?.email;
-
-        if (name && phone && email && clientId) {
-          this.clientService
-            .updateClient(clientId, name, phone, email)
-            ?.subscribe(() => this.dialogRef?.close());
+            this.dialogRef?.close({
+              clientId: oldClient.id,
+              changedValues,
+            });
+          } else
+            this.snackBar.open('Form was not changed.', '', {
+          duration: 1000,
+        });
         }
       }
     }

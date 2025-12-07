@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): MaybeAsync<GuardResult> {
     this.authService.autoAuthUser();
-    return this.authService.user.pipe(take(1), map(user => {
+    return this.authService.user$.pipe(take(1), map(user => {
 
 
         if(user){

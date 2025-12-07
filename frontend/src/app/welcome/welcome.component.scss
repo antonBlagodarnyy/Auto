@@ -1,0 +1,19 @@
+@use "@angular/material" as mat;
+@use "../../theme.scss" as theme;
+
+.container {
+  margin: auto;
+  margin-top: 10vh;
+  width: 50vh;
+}
+.title {
+  text-align: center;
+}
+.title span {
+  color: mat.get-theme-color(theme.$theme, primary, 50);
+}
+.container-auth {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}

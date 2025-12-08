@@ -1,11 +1,10 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { StoreService } from '../../../services/store.service';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -14,14 +13,14 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { IProduct } from '../../../Interfaces/IProduct';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 
-export interface DialogData {
-  id: number;
-  title: string;
-  description: string;
+type ProductFormModel = Omit<IProduct, 'stock' | 'price'> & {
   stock: string;
   price: string;
-}
+};
 
 @Component({
   selector: 'app-product-form',
@@ -31,22 +30,44 @@ export interface DialogData {
     MatInputModule,
     MatButtonModule,
     MatDialogModule,
+    MatIconModule,
   ],
   templateUrl: './product-form.component.html',
   styles: `form {
-  display: flex;
-  justify-content: space-around;
-}
-`,
+    padding: 2vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  mat-form-field{
+  padding:2vh;
+  }
+  `,
 })
 export class ProductFormComponent {
-  constructor(private storeService: StoreService) {}
-  private dialogRef = inject(MatDialogRef, { optional: true });
-  data = inject<DialogData>(MAT_DIALOG_DATA, { optional: true });
+  constructor(private snackBar: MatSnackBar) {}
+  private dialogRef = inject(MatDialogRef<ProductFormComponent>, {
+    optional: true,
+  });
+  readonly oldProduct = inject<IProduct>(MAT_DIALOG_DATA, { optional: true });
+  readonly parsedOldProduct: ProductFormModel | null = this.oldProduct
+    ? {
+        ...this.oldProduct,
+        stock: String(this.oldProduct.stock),
+        price: String(this.oldProduct.price),
+      }
+    : null;
 
-  isDialog = !!this.dialogRef;
+  //Outputs
+  createdEvent = output<{
+    title: string;
+    description: string;
+    stock: number;
+    price: number;
+  }>();
 
-  createdOrUpdated = output();
+  //Should be edited or created
+  editMode: boolean = !!this.dialogRef;
 
   productForm = new FormGroup({
     title: new FormControl('', Validators.required),
@@ -56,57 +77,67 @@ export class ProductFormComponent {
   });
 
   ngOnInit() {
-    if (this.isDialog && this.data) {
+    if (this.editMode && this.parsedOldProduct) {
       // Initialize form with dialog data
-      this.productForm.patchValue(this.data);
+      this.productForm.patchValue(this.parsedOldProduct);
     }
   }
 
   onSubmit() {
     if (this.productForm.valid) {
-      if (!this.data) {
-        if (
-          this.productForm.valid &&
-          this.productForm.value.title != undefined &&
-          this.productForm.value.description != undefined &&
-          this.productForm.value.stock != undefined &&
-          this.productForm.value.price != undefined
-        ) {
-          this.storeService
-            .createProduct(
-              this.productForm.value.title,
-              this.productForm.value.description,
-              +this.productForm.value.stock,
-              +this.productForm.value.price
-            )
-            ?.subscribe((product) => {
-              //TODO may be better to emit the product and update only one product
-              this.createdOrUpdated.emit();
-            });
+      if (!this.editMode) {
+        const { title, description, stock, price } = this.productForm.value;
+        if (title && description && stock && price) {
+          this.createdEvent.emit({
+            title: title,
+            description: description,
+            stock: +stock,
+            price: +price,
+          });
         }
       } else {
-        let productId = this.data?.id;
+        if (this.parsedOldProduct) {
+          const newValues = this.productForm.value;
 
-        let title = this.productForm.value.title
-          ? this.productForm.value.title
-          : this.data?.title;
+          if (
+            this.parsedOldProduct.title != newValues.title ||
+            this.parsedOldProduct.description != newValues.description ||
+            this.parsedOldProduct.stock != newValues.stock ||
+            this.parsedOldProduct.price != newValues.price
+          ) {
+            const changedValues = [];
+            if (
+              newValues.title &&
+              this.parsedOldProduct.title != newValues.title
+            )
+              changedValues.push({ key: 'title', value: newValues.title });
+            if (
+              newValues.description &&
+              this.parsedOldProduct.description != newValues.description
+            )
+              changedValues.push({
+                key: 'description',
+                value: newValues.description,
+              });
+            if (
+              newValues.stock &&
+              this.parsedOldProduct.stock != newValues.stock
+            )
+              changedValues.push({ key: 'stock', value: newValues.stock });
+            if (
+              newValues.price &&
+              this.parsedOldProduct.price != newValues.price
+            )
+              changedValues.push({ key: 'price', value: newValues.price });
 
-        let description = this.productForm.value.description
-          ? this.productForm.value.description
-          : this.data?.description;
-
-        let stock = this.productForm.value.stock
-          ? +this.productForm.value.stock
-          : this.data?.stock;
-
-        let price = this.productForm.value.price
-          ? +this.productForm.value.price
-          : this.data?.price;
-
-        if (title && description && stock && price && productId) {
-          this.storeService
-            .updateProduct(productId, title, description, +stock, +price)
-            ?.subscribe(() => this.dialogRef?.close());
+            this.dialogRef?.close({
+              productId: this.parsedOldProduct.id,
+              changedValues,
+            });
+          } else
+            this.snackBar.open('Form was not changed.', '', {
+              duration: 1000,
+            });
         }
       }
     }

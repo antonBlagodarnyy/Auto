@@ -14,13 +14,11 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { IClient } from '../../../Interfaces/IClient';
 
-interface DialogData {
-  id: number;
-  name: string;
-  email: string;
+type ClientFormModel = Omit<IClient, 'phone'> & {
   phone: string;
-}
+};
 
 @Component({
   selector: 'app-client-form',
@@ -33,7 +31,6 @@ interface DialogData {
   ],
   templateUrl: './client-form.component.html',
   styles: `form {
-  
     padding: 2vh;
     display: flex;
     justify-content: center;
@@ -50,9 +47,16 @@ export class ClientFormComponent {
   private dialogRef = inject(MatDialogRef<ClientFormComponent>, {
     optional: true,
   });
-  readonly dialogData = inject<DialogData>(MAT_DIALOG_DATA, {
+  readonly oldClient = inject<IClient>(MAT_DIALOG_DATA, {
     optional: true,
   });
+  readonly parsedOldClient: ClientFormModel | null = this.oldClient
+    ? {
+        ...this.oldClient,
+        phone: String(this.oldClient.phone),
+      }
+    : null;
+
   //Outputs
   createdEvent = output<{ name: string; phone: number; email: string }>();
 
@@ -70,9 +74,9 @@ export class ClientFormComponent {
   });
 
   ngOnInit() {
-    if (this.editMode && this.dialogData) {
+    if (this.editMode && this.parsedOldClient) {
       // Initialize form with dialog data
-      this.clientForm.patchValue(this.dialogData);
+      this.clientForm.patchValue(this.parsedOldClient);
     }
   }
 
@@ -88,32 +92,37 @@ export class ClientFormComponent {
           });
         }
       } else {
-        if (this.dialogData) {
-          const oldClient = this.dialogData;
+        if (this.parsedOldClient) {
 
           const newValues = this.clientForm.value;
 
           if (
-            oldClient.email != newValues.email ||
-            oldClient.name != newValues.name ||
-            oldClient.phone != newValues.phone
+            this.parsedOldClient.email != newValues.email ||
+            this.parsedOldClient.name != newValues.name ||
+            this.parsedOldClient.phone != newValues.phone
           ) {
             const changedValues = [];
-            if (newValues.name && oldClient.name != newValues.name)
+            if (newValues.name && this.parsedOldClient.name != newValues.name)
               changedValues.push({ key: 'name', value: newValues.name });
-            if (newValues.email && oldClient.email != newValues.email)
+            if (
+              newValues.email &&
+              this.parsedOldClient.email != newValues.email
+            )
               changedValues.push({ key: 'email', value: newValues.email });
-            if (newValues.phone && oldClient.phone != newValues.phone)
+            if (
+              newValues.phone &&
+              this.parsedOldClient.phone != newValues.phone
+            )
               changedValues.push({ key: 'phone', value: newValues.phone });
 
             this.dialogRef?.close({
-              clientId: oldClient.id,
+              clientId: this.parsedOldClient.id,
               changedValues,
             });
           } else
             this.snackBar.open('Form was not changed.', '', {
-          duration: 1000,
-        });
+              duration: 1000,
+            });
         }
       }
     }

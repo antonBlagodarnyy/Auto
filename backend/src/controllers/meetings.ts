@@ -3,8 +3,9 @@ import con from "../db-connection.js";
 import type { Request, Response } from "express";
 import type { ICustomReq } from "../types/ICustomReq.js";
 
-export const createMeeting = (req: ICustomReq, res: Response) => {
-  const userId = req.userId;
+export const createMeeting = (req: Request, res: Response) => {
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
   const name = req.body.name;
   const day_of_meeting = req.body.dayOfMeeting;
 
@@ -23,8 +24,9 @@ export const createMeeting = (req: ICustomReq, res: Response) => {
   );
 };
 
-export const getMeetings = (req: ICustomReq, res: Response) => {
-  const userId = req.userId;
+export const getMeetings = (req: Request, res: Response) => {
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
 
   var sql = "select * from MEETING where USER_ID=?";
 

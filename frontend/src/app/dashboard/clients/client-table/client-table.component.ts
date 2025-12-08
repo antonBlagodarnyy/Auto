@@ -5,7 +5,6 @@ import {
   OnInit,
   output,
   viewChild,
-  ViewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -20,8 +19,10 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
     padding: 1vh;
     border-width: 1px;
     border-color: black;
-    border-style: solid;
-    border-radius:10px;
+    border-radius: 10px 10px 0 0;
+  }
+  mat-paginator{
+    border-radius: 0 0 10px 10px;
   }`,
 })
 export class ClientTableComponent implements OnInit {

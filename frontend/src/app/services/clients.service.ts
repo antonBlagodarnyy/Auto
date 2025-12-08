@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthService } from './auth.service';
 import { IClient } from '../Interfaces/IClient';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject, map, switchMap, take, tap } from 'rxjs';
@@ -9,7 +8,7 @@ import { BehaviorSubject, map, switchMap, take, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class ClientService {
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
   private clientsSubject = new BehaviorSubject<IClient[]>([]);
 

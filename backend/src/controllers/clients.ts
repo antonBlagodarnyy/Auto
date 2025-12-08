@@ -1,15 +1,16 @@
 import con from "../db-connection.js";
-import type { Response } from "express";
+import type { Response, Request  } from "express";
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import type { ICustomReq } from "../types/ICustomReq.js";
 
-export const createClient = (req: ICustomReq, res: Response) => {
-  const userId = req.userId;
+export const createClient = (req: Request, res: Response) => {
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
   const name = req.body.name;
   const phone = req.body.phone;
   const email = req.body.email;
 
-  var sql =
+  const sql =
     "insert into CLIENT (USER_ID, NAME, PHONE, EMAIL) values (?,?,?,?);";
 
   con.query<ResultSetHeader>(
@@ -24,10 +25,11 @@ export const createClient = (req: ICustomReq, res: Response) => {
   );
 };
 
-export const getClients = (req: ICustomReq, res: Response) => {
-  const userId = req.userId;
+export const getClients = (req: Request, res: Response) => {
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
 
-  var sql = "select * from CLIENT where USER_ID=?";
+  const sql = "select * from CLIENT where USER_ID=?";
 
   con.query<RowDataPacket[]>(sql, [userId], (error, result) => {
     if (error) return res.status(520).json({ error: error.name });
@@ -46,23 +48,26 @@ export const getClients = (req: ICustomReq, res: Response) => {
   });
 };
 
-export const deleteClient = (req: ICustomReq, res: Response) => {
-  const userId = req.userId;
+export const deleteClient = (req: Request, res: Response) => {
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
   const clientId = req.body.clientId;
-  var sql = "delete from CLIENT where ID = ? and USER_ID = ?";
+
+  const sql = "delete from CLIENT where ID = ? and USER_ID = ?";
 
   con.query<ResultSetHeader>(sql, [clientId, userId], (error, result) => {
     if (error) return res.status(520).json({ error: error.name });
     else if (result.affectedRows === 0)
       return res
         .status(403)
-        .json({ message: "Not authorized or task not found" });
+        .json({ message: "Not authorized or client not found" });
     else return res.sendStatus(200);
   });
 };
 
-export const updateClient = (req: ICustomReq, res: Response) => {
-  const userId = req.userId;
+export const updateClient = (req: Request, res: Response) => {
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
   const clientId = req.body.clientId;
   const updates: { key: string; value: string }[] = req.body.changedValues;
 

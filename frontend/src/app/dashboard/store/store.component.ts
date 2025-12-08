@@ -1,106 +1,90 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Signal } from '@angular/core';
 import { StoreService } from '../../services/store.service';
-import { Product } from './product.model';
+import { IProduct } from '../../Interfaces/IProduct';
 import { ProductFormComponent } from './product-form/product-form.component';
-import { BehaviorSubject } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ProductTableComponent } from './product-table/product-table.component';
 
 @Component({
   selector: 'app-store',
   imports: [
     ProductFormComponent,
+    ProductTableComponent,
     MatDialogModule,
     MatTableModule,
     MatButtonModule,
   ],
-  template: ` <app-product-form
-      (createdOrUpdated)="updateProducts()"
+  template: `
+    <app-product-form
+      (createdEvent)="onCreatedProduct($event)"
     ></app-product-form>
-    <table mat-table [dataSource]="products.getValue()">
-
-    <ng-container matColumnDef="title">
-        <th mat-header-cell *matHeaderCellDef>Title</th>
-        <td mat-cell *matCellDef="let product">{{ product.title }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef>Description</th>
-        <td mat-cell *matCellDef="let product">{{ product.description }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="stock">
-        <th mat-header-cell *matHeaderCellDef>Stock</th>
-        <td mat-cell *matCellDef="let product">{{ product.stock }}</td>
-      </ng-container>
-
-       <ng-container matColumnDef="price">
-        <th mat-header-cell *matHeaderCellDef>Price</th>
-        <td mat-cell *matCellDef="let product">{{ product.price }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let product">
-          <button mat-button (click)="onProductDelete(product.id)">Delete</button>
-          <button
-            mat-button
-            (click)="
-              toggleForm(product.title, product.description, product.stock, product.price, product.id)
-            "
-          >
-            Edit
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-      <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
-    </table>`,
+    <div class="container">
+      <app-product-table
+        [products]="products()"
+        (deleteEvent)="onDeleteProduct($event)"
+        (openEditFormEvent)="onOpenEditForm($event)"
+      />
+    </div>
+  `,
+  styles: `.container{
+    padding: 5vh;
+  }`,
 })
 export class StoreComponent implements OnInit {
-  products = new BehaviorSubject<Product[]>([]);
-  
-  columnsToDisplay = ['title', 'description', 'stock', 'price' ,'actions'];
+  constructor(private dialog: MatDialog, private snackBarRef: MatSnackBar) {}
 
-  editForm = inject(MatDialog);
+  private storeService = inject(StoreService);
 
-  constructor(private storeService: StoreService) {}
+  products: Signal<IProduct[]> = toSignal(this.storeService.products$, {
+    initialValue: [],
+  });
 
   ngOnInit(): void {
-    this.updateProducts();
+    this.storeService.getStoredProducts$().subscribe();
   }
-  updateProducts() {
-    this.storeService.getProducts()?.subscribe((product) => {
-      this.products.next(product.results);
+
+  onCreatedProduct(newProduct: {
+    title: string;
+    description: string;
+    stock: number;
+    price: number;
+  }) {
+    this.storeService.addNewProduct$(newProduct).subscribe({
+      next: () => {
+        this.snackBarRef.open('Client added.', '', {
+          duration: 1000,
+        });
+      },
     });
   }
 
-  onProductDelete(productId: number) {
-    this.storeService
-      .deleteProduct(productId)
-      ?.subscribe(() => this.updateProducts());
+  onDeleteProduct(productId: number) {
+    this.storeService.deleteProduct$(productId)?.subscribe({
+      next: () => {
+        this.snackBarRef.open('Product deleted.', '', {
+          duration: 1000,
+        });
+      },
+    });
   }
-  toggleForm(
-      productTitle: string,
-      productDescription: string,
-      productStock: string,
-      productPrice: number,
-      productId: number
-    ) {
-      const dialogRef = this.editForm.open(ProductFormComponent, {
-        data: {
-          edit: true,
-          title: productTitle,
-          description: productDescription,
-          stock: ""+productStock,
-          price:""+productPrice,
-          id: productId,
+
+  onOpenEditForm(product: IProduct) {
+    const dialogRef = this.dialog.open(ProductFormComponent, {
+      data: product,
+      maxWidth: '100%',
+    });
+    // Listen to the dialog close event to handle edit
+    dialogRef.afterClosed().subscribe((result) => {
+      const { productId, changedValues } = result;
+      this.storeService.updateProduct$(productId, changedValues).subscribe({
+        next: () => {
+          this.snackBarRef.open('Product edited.', '', { duration: 1000 });
         },
       });
-      dialogRef.afterClosed().subscribe(() => {
-        this.updateProducts();
-      });
-    }
+    });
+  }
 }

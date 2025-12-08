@@ -1,28 +1,26 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import con from "../db-connection.js";
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import type { ICustomReq } from "../types/ICustomReq.js";
 
-export const createTask = (req: ICustomReq, res: Response) => {
-  const userId = req.userId;
+export const createTask = (req: Request, res: Response) => {
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
   const content = req.body.content;
 
   var sql = "insert into TASK (USER_ID, CONTENT, CHECKED) values (?,?,0);";
 
-  con.query<ResultSetHeader>(
-    sql,
-    [userId, content],
-    (error, result) => {
-      if (error) return res.status(520).json({ error: error.name });
-      else {
-        return res.status(201).json({ taskId: result.insertId });
-      }
+  con.query<ResultSetHeader>(sql, [userId, content], (error, result) => {
+    if (error) return res.status(520).json({ error: error.name });
+    else {
+      return res.status(201).json({ taskId: result.insertId });
     }
-  );
+  });
 };
 
-export const getTasks = (req: ICustomReq, res: Response) => {
-  const userId = req.userId;
+export const getTasks = (req: Request, res: Response) => {
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
 
   var sql = "select * from TASK where USER_ID = ?";
 
@@ -38,9 +36,10 @@ export const getTasks = (req: ICustomReq, res: Response) => {
   });
 };
 
-export const deleteTask = (req: ICustomReq, res: Response) => {
+export const deleteTask = (req: Request, res: Response) => {
   const taskId = req.body.taskId;
-  const userId = req.userId;
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
 
   var sql = "delete  from TASK where ID = ? and USER_ID = ?";
 
@@ -54,9 +53,10 @@ export const deleteTask = (req: ICustomReq, res: Response) => {
   });
 };
 
-export const checkTask = (req: ICustomReq, res: Response) => {
+export const checkTask = (req: Request, res: Response) => {
   const taskId = req.body.taskId;
-  const userId = req.userId;
+  const customReq = req as ICustomReq;
+  const userId = customReq.userId;
 
   var sql = "update TASK set CHECKED = !CHECKED where ID = ? and USER_ID = ?;";
 

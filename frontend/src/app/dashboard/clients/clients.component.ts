@@ -37,8 +37,6 @@ export class ClientsComponent implements OnInit {
     initialValue: [],
   });
 
-  dialogRef: MatDialogRef<ClientFormComponent> | undefined;
-
   ngOnInit(): void {
     this.clientService.getStoredClients$().subscribe();
   }
@@ -64,17 +62,12 @@ export class ClientsComponent implements OnInit {
   }
 
   onOpenEditForm(client: IClient) {
-    this.dialogRef = this.dialog.open(ClientFormComponent, {
-      data: {
-        id: client.id,
-        name: client.name,
-        email: client.email,
-        phone: client.phone,
-      },
+    const dialogRef = this.dialog.open(ClientFormComponent, {
+      data: client,
       maxWidth: '100%',
     });
     // Listen to the dialog close event to handle edit
-    this.dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result) => {
       const { clientId, changedValues } = result;
       this.clientService.updateClient$(clientId, changedValues).subscribe({
         next: () => {

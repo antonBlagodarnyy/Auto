@@ -1,0 +1,6 @@
+services:
+  app:
+    build: .
+    env_file: ./.env
+    ports:
+      - $APP_LOCAL_PORT:$APP_DOCKER_PORT

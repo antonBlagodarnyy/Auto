@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import http from "http";
 dotenv.config();
 
 import userRoutes from "./routes/users.js";
@@ -17,7 +18,7 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL!, process.env.DEV_URL!],
+    origin: [process.env.DEV_URL ?? process.env.CLIENT_URL! ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -29,4 +30,6 @@ app.use("/api/store", storeRoutes);
 app.use("/api/client", clientRoutes);
 app.use("/api/meeting", meetingRoutes);
 
-export default app;
+const server = http.createServer(app);
+
+server.listen(+process.env.APP_LOCAL_PORT!, process.env.PROD_ID ?? 'localhost');

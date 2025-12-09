@@ -1,4 +1,4 @@
 export const environment = {
     production:true,
-     apiUrl: 'https://auto-ojrg.onrender.com/api'
+     apiUrl: 'http://217.160.248.225:80/api/'
 };

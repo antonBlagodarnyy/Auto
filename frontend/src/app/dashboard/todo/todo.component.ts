@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Signal } from '@angular/core';
 import { ITask } from '../../Interfaces/ITask';
 import { FormsModule } from '@angular/forms';
 import { TodoService } from '../../services/todo.service';
-import { BehaviorSubject } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-todo',
@@ -37,7 +37,7 @@ import { MatDividerModule } from '@angular/material/divider';
         <button class="button-submit" mat-button type="submit">Add task</button>
       </form>
       <mat-dialog-content>
-        @for (task of tasks.getValue(); track $index) {
+        @for (task of tasks(); track task.taskId) {
         <div class="container-task">
           <mat-checkbox
             [checked]="task.checked"
@@ -50,7 +50,7 @@ import { MatDividerModule } from '@angular/material/divider';
             <mat-icon fontIcon="delete" />
           </button>
         </div>
-        @if($index+1 != tasks.getValue().length){
+        @if($index+1 != tasks.length){
         <mat-divider></mat-divider>
         } }
       </mat-dialog-content>
@@ -69,45 +69,28 @@ import { MatDividerModule } from '@angular/material/divider';
   `,
 })
 export class TodoComponent implements OnInit {
-  tasks = new BehaviorSubject<ITask[]>([]);
+  constructor() {}
+  private todoService = inject(TodoService);
+  tasks: Signal<ITask[]> = toSignal(this.todoService.tasks$, {
+    initialValue: [],
+  });
+
   taskContent: string | undefined;
 
-  constructor(private todoService: TodoService) {}
   ngOnInit(): void {
-    this.updateTasks();
+    this.todoService.getTasks$().subscribe();
   }
 
-  updateTasks() {
-    this.todoService.getTasks$()?.subscribe((tasks) => {
-      this.tasks.next(tasks.results);
-    });
-  }
   addTask() {
-    if (this.taskContent) {
-      const content = this.taskContent;
-      this.todoService.createTask$(content).subscribe({
-        next: (res) => {
-          const currentTasks = this.tasks.getValue();
-          const updateTasks = [
-            ...currentTasks,
-            { content: content, taskId: res.taskId, checked: false },
-          ];
-          this.tasks.next(updateTasks);
-          this.taskContent = undefined;
-        },
-      });
-    }
+    if (this.taskContent)
+      this.todoService.addTask$(this.taskContent).subscribe();
   }
 
   toggleTask(taskId: number) {
-    this.todoService.checkTask$(taskId).subscribe({
-      next: () => {
-        this.updateTasks();
-      },
-    });
+    this.todoService.checkTask$(taskId).subscribe();
   }
 
   deleteTask(taskId: number) {
-    this.todoService.deleteTask$(taskId).subscribe(() => this.updateTasks());
+    this.todoService.deleteTask$(taskId).subscribe();
   }
 }

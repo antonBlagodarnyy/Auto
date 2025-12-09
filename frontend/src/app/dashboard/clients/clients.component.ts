@@ -5,7 +5,6 @@ import { ClientService } from '../../services/clients.service';
 import {
   MatDialog,
   MatDialogModule,
-  MatDialogRef,
 } from '@angular/material/dialog';
 import { ClientTableComponent } from './client-table/client-table.component';
 import { toSignal } from '@angular/core/rxjs-interop';

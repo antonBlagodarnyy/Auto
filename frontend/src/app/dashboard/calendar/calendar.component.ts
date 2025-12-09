@@ -1,4 +1,4 @@
-import { formatDate, NgClass, NgIf } from '@angular/common';
+import { formatDate, NgClass } from '@angular/common';
 import {
   Component,
   computed,
@@ -9,33 +9,38 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { DateTime, Info, Interval } from 'luxon';
-import { Meeting, Meetings } from './meeting.model';
-import { AddMeetingComponent } from './add-meeting/add-meeting.component';
+import { IMeeting, IMeetings } from '../../Interfaces/IMeetings';
 import { CalendarService } from '../../services/calendar.service';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
-import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { DayDetailsComponent } from './day-details/day-details.component';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @Component({
   selector: 'app-calendar',
   imports: [
     NgClass,
-    MatChipsModule,
     MatButtonModule,
-    MatListModule,
     MatCardModule,
+    MatIconModule,
+    MatGridListModule,
+    MatBadgeModule
   ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss',
 })
 export class CalendarComponent implements OnInit {
-  constructor(private calendarService: CalendarService) {}
+  constructor(private dialog: MatDialog) {}
 
-  meetingForm = inject(MatDialog);
+  private calendarService = inject(CalendarService);
 
-  meetings: WritableSignal<Meetings> = signal({});
+  meetings: Signal<IMeetings> = toSignal(this.calendarService.meetings$, {
+    initialValue: {},
+  });
 
   today: Signal<DateTime> = signal(DateTime.local());
 
@@ -61,9 +66,7 @@ export class CalendarComponent implements OnInit {
       });
   });
 
-  DATE_MED = DateTime.DATE_MED;
-
-  activeDayMeetings: Signal<Meeting[]> = computed(() => {
+  activeDayMeetings: Signal<IMeeting[]> = computed(() => {
     const activeDay = this.activeDay();
     if (activeDay === null) {
       return [];
@@ -79,7 +82,7 @@ export class CalendarComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.updateMeetings();
+    this.calendarService.getStoredMeetings$().subscribe();
   }
 
   goToPreviousMonth(): void {
@@ -96,36 +99,12 @@ export class CalendarComponent implements OnInit {
     this.firstDayOfActiveMonth.set(this.today().startOf('month'));
   }
 
-  addMeeting(activeDay: string) {
-    const dialogRef = this.meetingForm.open(AddMeetingComponent, {
-      data: {
-        mode: "create",
-        activeDay: activeDay,
-      },
-    });
-    dialogRef.afterClosed().subscribe(() => {
-      this.updateMeetings();
+  openDay(selectedDay: DateTime) {
+    this.dialog.open(DayDetailsComponent, {
+      width: '80%',
+      maxWidth: '100%',
+      data: { selectedDay: selectedDay, meetings: this.activeDayMeetings },
     });
   }
-  editMeeting(meetingId: number) {
-    const dialogRef = this.meetingForm.open(AddMeetingComponent, {
-      data: {
-        mode: "edit",
-        id: meetingId,
-      },
-    });
-    dialogRef.afterClosed().subscribe(() => {
-      this.updateMeetings();
-    });
-  }
-  updateMeetings() {
-    this.calendarService.getMeetings()?.subscribe((result) => {
-      this.meetings.set(result.results);
-    });
-  }
-  deleteMeeting(meetingId: number) {
-    this.calendarService.deleteMeeting(meetingId)?.subscribe(() => {
-      this.updateMeetings();
-    });
-  }
+ 
 }

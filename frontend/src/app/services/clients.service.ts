@@ -49,9 +49,9 @@ export class ClientService {
         responseType: 'text',
       })
       .pipe(
-        switchMap(() => this.clientsSubject.pipe(take(1))),
-        tap((clients) => {
-          this.clientsSubject.next(clients.filter((c) => c.id !== clientId));
+        tap(() => {
+          const current = this.clientsSubject.value;
+          this.clientsSubject.next(current.filter((c) => c.id !== clientId));
         })
       );
   }

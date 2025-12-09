@@ -8,11 +8,8 @@ import { AuthService } from '../services/auth.service';
   imports: [HeaderComponent, RouterOutlet],
 
   template: `<app-header></app-header>
-    <div class="container">
-      <div class="dashboard">
-        <router-outlet></router-outlet>
-      </div>
-    </div> `,
+
+    <router-outlet></router-outlet> `,
 })
 export class DashboardComponent {
   constructor(private authService: AuthService, private router: Router) {

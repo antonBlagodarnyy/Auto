@@ -29,6 +29,9 @@ import { TodoComponent } from '../todo/todo.component';
     <span style="flex:1 1 auto"></span>
     <button mat-raised-button (click)="onLogout()">Logout</button>
   </mat-toolbar>`,
+  styles:`a{
+    margin: 2vh;
+  }`
 })
 export class HeaderComponent {
   constructor(private authService: AuthService, private dialogRef: MatDialog) {}

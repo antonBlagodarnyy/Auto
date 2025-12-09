@@ -5,8 +5,7 @@
 $theme: mat.define-theme(
   (
     color: (
-      primary: mat.$cyan-palette,
-      tertiary: mat.$spring-green-palette,
+      primary: mat.$azure-palette,
     ),
     typography: (
       plain-family: Roboto,
@@ -34,4 +33,5 @@ $theme: mat.define-theme(
       container-color: mat.get-theme-color($theme, primary, 10),
     )
   );
+ 
 }

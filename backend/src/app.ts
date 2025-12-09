@@ -32,4 +32,4 @@ app.use("/api/meeting", meetingRoutes);
 
 const server = http.createServer(app);
 
-server.listen(+process.env.APP_LOCAL_PORT!, process.env.PROD_ID ?? 'localhost');
+server.listen(+process.env.APP_DOCKER_PORT!, process.env.PROD_ID ?? 'localhost');

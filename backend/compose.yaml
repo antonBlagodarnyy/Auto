@@ -1,6 +1,11 @@
 services:
   app:
     build: .
+    networks:
+      - my_network
     env_file: ./.env
     ports:
       - $APP_DOCKER_PORT:$APP_LOCAL_PORT
+networks:
+  my_network:
+    external: true

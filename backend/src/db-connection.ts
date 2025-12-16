@@ -1,4 +1,7 @@
-import mysql, { type Connection, type ConnectionOptions } from "mysql2";
+import mysql, {
+  type ConnectionOptions,
+  type Pool,
+} from "mysql2";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -9,7 +12,10 @@ const conOptions: ConnectionOptions = {
   database: process.env.DB_NAME!,
   port: +process.env.DB_PORT!,
   dateStrings: ["DATE"],
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 };
 
-const con: Connection = mysql.createConnection(conOptions);
+const con: Pool = mysql.createPool(conOptions);
 export default con;

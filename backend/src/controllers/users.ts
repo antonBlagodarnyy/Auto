@@ -4,41 +4,42 @@ import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export const createUser = (req: Request, res: Response) => {
-  const username = req.body.username;
-  const email = req.body.email;
-  const password = req.body.password;
+export const createUser = async (req: Request, res: Response) => {
+  try {
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
 
-  bcrypt.hash(password, 10).then((hash) => {
-    var sql = "insert into USER (USERNAME, EMAIL, PWD_HASH) values (?,?,?)";
+    const hash = await bcrypt.hash(password, 10);
 
-    con.query<ResultSetHeader>(sql, [username, email, hash], (err, result) => {
-      if (err) {
-        if (err.code == "ER_DUP_ENTRY")
-          return res.status(409).json({ message: "Email already exists" });
-        else return res.status(500).json({ message: "Something went wrong" });
-      } else {
-        const token = jwt.sign(
-          { userId: result.insertId },
-          process.env.JWT_KEY!,
-          { expiresIn: "1h" }
-        );
-        return res
-          .status(201)
-          .json({ token: token, expiresIn: 3600, userId: result.insertId });
-      }
+    const sql = "insert into USER (USERNAME, EMAIL, PWD_HASH) values (?,?,?)";
+
+    const [result] = await con.query<ResultSetHeader>(sql, [
+      username,
+      email,
+      hash,
+    ]);
+
+    const token = jwt.sign({ userId: result.insertId }, process.env.JWT_KEY!, {
+      expiresIn: "1h",
     });
-  });
+    return res
+      .status(201)
+      .json({ token: token, expiresIn: 3600, userId: result.insertId });
+  } catch (err: any) {
+    if (err.code == "ER_DUP_ENTRY")
+      return res.status(409).json({ message: "Email already exists" });
+    else return res.status(500).json({ message: "Something went wrong" });
+  }
 };
 
-export const userLogin = (req: Request, res: Response) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  var sql = "select * from USER where EMAIL = ?";
-  con.query<RowDataPacket[]>(sql, [email], (error, result) => {
-    if (error) {
-      return res.status(500).json({ message: "Database error" });
-    }
+export const userLogin = async (req: Request, res: Response) => {
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+    const sql = "select * from USER where EMAIL = ?";
+    const [result] = await con.query<RowDataPacket[]>(sql, [email]);
+
     if (result.length == 0) {
       return res
         .status(401)
@@ -46,20 +47,19 @@ export const userLogin = (req: Request, res: Response) => {
     } else {
       const user = result[0];
 
-      return bcrypt.compare(password, user!.PWD_HASH).then((result) => {
-        if (!result) {
-          return res.status(401).json({ message: "Password incorrect" });
-        } else {
-          const token = jwt.sign(
-            { userId: user!.ID },
-            process.env.JWT_KEY!,
-            { expiresIn: "1h" }
-          );
-          res
-            .status(200)
-            .json({ token: token, expiresIn: 3600, userId: user!.ID });
-        }
-      });
+      const valid = await bcrypt.compare(password, user!.PWD_HASH);
+      if (!valid) {
+        return res.status(401).json({ message: "Password incorrect" });
+      } else {
+        const token = jwt.sign({ userId: user!.ID }, process.env.JWT_KEY!, {
+          expiresIn: "1h",
+        });
+        res
+          .status(200)
+          .json({ token: token, expiresIn: 3600, userId: user!.ID });
+      }
     }
-  });
+  } catch (err: any) {
+    return res.status(500).json({ message: "Database error" });
+  }
 };

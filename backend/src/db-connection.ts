@@ -1,7 +1,7 @@
 import mysql, {
   type ConnectionOptions,
   type Pool,
-} from "mysql2";
+} from "mysql2/promise";
 import dotenv from "dotenv";
 dotenv.config();
 

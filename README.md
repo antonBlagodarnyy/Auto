@@ -12,6 +12,23 @@
 
 3. Custom tables.
 
+4. Add a welcome screen.
+
+## V1.1.2
+
+### Changes
+
+1. Made mobile responsive.
+
+2. Added a welcome screen.
+
+### Bug fixes
+
+1. Container crashed after some time because it connected directly to the db.
+   And so when mysql timeouts connections node throws an exception.
+   
+   - Switched from a direct connection to an asynchronous pool.
+
 ## V1.1.1
 
 ### Changes
@@ -31,9 +48,9 @@
 4. User id is now set and retrieved directly from the JWT.
 
 5. Calendar improvements:
-    - Implemented Material on Calendar. 
 
-    - Meetings component is now a dialog that is opened on clicking the day.
+   - Implemented Material on Calendar.
 
-    - Added a badge on days that have meetings.
+   - Meetings component is now a dialog that is opened on clicking the day.
 
+   - Added a badge on days that have meetings.

@@ -18,7 +18,7 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: [process.env.DEV_URL ?? process.env.CLIENT_URL! ],
+    origin: [process.env.DEV_URL ?? process.env.CLIENT_URL!],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -31,5 +31,8 @@ app.use("/api/client", clientRoutes);
 app.use("/api/meeting", meetingRoutes);
 
 const server = http.createServer(app);
-
-server.listen(+process.env.APP_DOCKER_PORT!, process.env.PROD_ID ?? 'localhost');
+server.on("listening", () => console.log("server listening"));
+server.listen(
+  +process.env.APP_DOCKER_PORT!,
+  process.env.PROD_ID ?? "localhost"
+);

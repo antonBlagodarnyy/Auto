@@ -1,74 +1,77 @@
-<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-  <mat-form-field appearance="outline" hintLabel="Max 20 characters">
-    <mat-label>Title:</mat-label>
-    <input
-      matInput
-      id="title"
-      name="title"
-      maxlength="20"
-      type="text"
-      formControlName="title"
-    />
-    <mat-hint align="end">{{ productForm.value.title?.length }}/20</mat-hint>
-    <mat-error>Name is required</mat-error>
-  </mat-form-field>
-  <mat-form-field appearance="outline" hintLabel="Max 50 characters">
-    <mat-label>Description:</mat-label>
-    <input
-      matInput
-      id="description"
-      name="description"
-      maxlength="50"
-      type="text"
-      formControlName="description"
-    />
-    <mat-hint align="end"
-      >{{ productForm.value.description?.length }}/50</mat-hint
-    >
-    <mat-error>Description is required</mat-error>
-  </mat-form-field>
-  <mat-form-field appearance="outline" hintLabel="Max 10000 units">
-    <mat-label>Stock:</mat-label>
-    <input
-      matInput
-      id="stock"
-      name="stock"
-      type="number"
-      max="10000"
-      min="0"
-      formControlName="stock"
-    />
-    <mat-error>
-      @switch(true){ @case(productForm.get("stock")?.hasError("required")){
-      {{ "Stock is requiered" }}
-      } @case (productForm.get("stock")?.hasError("max"))
-      {{{ "Max number of digits exceded" }}
-      } @case (productForm.get("stock")?.hasError("min"))
-      {{{ "Cannot be negative" }}}}
-    </mat-error>
-  </mat-form-field>
+<h2 mat-dialog-title>{{ editMode ? "Edit product" : "Add product" }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" hintLabel="Max 20 characters">
+      <mat-label>Title:</mat-label>
+      <input
+        matInput
+        id="title"
+        name="title"
+        maxlength="20"
+        type="text"
+        formControlName="title"
+      />
+      <mat-hint align="end">{{ productForm.value.title?.length }}/20</mat-hint>
+      <mat-error>Name is required</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" hintLabel="Max 50 characters">
+      <mat-label>Description:</mat-label>
+      <input
+        matInput
+        id="description"
+        name="description"
+        maxlength="50"
+        type="text"
+        formControlName="description"
+      />
+      <mat-hint align="end"
+        >{{ productForm.value.description?.length }}/50</mat-hint
+      >
+      <mat-error>Description is required</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" hintLabel="Max 10000 units">
+      <mat-label>Stock:</mat-label>
+      <input
+        matInput
+        id="stock"
+        name="stock"
+        type="number"
+        max="10000"
+        min="0"
+        formControlName="stock"
+      />
+      <mat-error>
+        @switch(true){ @case(productForm.get("stock")?.hasError("required")){
+        {{ "Stock is requiered" }}
+        } @case (productForm.get("stock")?.hasError("max"))
+        {{{ "Max number of digits exceded" }}
+        } @case (productForm.get("stock")?.hasError("min"))
+        {{{ "Cannot be negative" }}}}
+      </mat-error>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" hintLabel="Max 10000€">
-    <mat-label>Price:</mat-label>
-    <input
-      matInput
-      id="price"
-      name="price"
-      type="number"
-      step="0.01"
-      max="10000"
-      min="0"
-      formControlName="price"
-    />
-    <mat-icon matSuffix fontIcon="euro"/>
-       <mat-error>
-      @switch(true){ @case(productForm.get("price")?.hasError("required")){
-      {{ "Price is requiered" }}
-      } @case (productForm.get("price")?.hasError("max"))
-      {{{ "Too expensive" }}
-      } @case (productForm.get("price")?.hasError("min"))
-      {{{ "At least 0" }}}}
-    </mat-error>
-  </mat-form-field>
-  <button mat-raised-button type="submit">Save</button>
-</form>
+    <mat-form-field appearance="outline" hintLabel="Max 999€">
+      <mat-label>Price:</mat-label>
+      <input
+        matInput
+        id="price"
+        name="price"
+        type="number"
+        step="0.01"
+        max="999"
+        min="0"
+        formControlName="price"
+      />
+      <mat-icon matSuffix fontIcon="euro" />
+      <mat-error>
+        @switch(true){ @case(productForm.get("price")?.hasError("required")){
+        {{ "Price is requiered" }}
+        } @case (productForm.get("price")?.hasError("max"))
+        {{{ "Too expensive" }}
+        } @case (productForm.get("price")?.hasError("min"))
+        {{{ "At least 0" }}}}
+      </mat-error>
+    </mat-form-field>
+    <button mat-raised-button type="submit">Save</button>
+  </form>
+</mat-dialog-content>

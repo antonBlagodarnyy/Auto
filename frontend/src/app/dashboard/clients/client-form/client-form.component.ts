@@ -31,13 +31,14 @@ type ClientFormModel = Omit<IClient, 'phone'> & {
   ],
   templateUrl: './client-form.component.html',
   styles: `form {
-    padding: 2vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
   }
   mat-form-field{
-  padding:2vh;
+  width:100%;
+  padding: 1rem;
   }
   `,
 })
@@ -57,11 +58,8 @@ export class ClientFormComponent {
       }
     : null;
 
-  //Outputs
-  createdEvent = output<{ name: string; phone: number; email: string }>();
-
   //Should be edited or created
-  editMode: boolean = !!this.dialogRef;
+  editMode: boolean = !!this.oldClient;
 
   //Form validatos
   clientForm = new FormGroup({
@@ -85,15 +83,13 @@ export class ClientFormComponent {
       if (!this.editMode) {
         const { name, phone, email } = this.clientForm.value;
         if (name && phone && email) {
-          this.createdEvent.emit({
-            name: name,
-            phone: +phone,
-            email: email,
+     
+          this.dialogRef?.close({
+            newClient: { name: name, phone: phone, email: email },
           });
         }
       } else {
         if (this.parsedOldClient) {
-
           const newValues = this.clientForm.value;
 
           if (

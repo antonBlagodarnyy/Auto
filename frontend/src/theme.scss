@@ -23,6 +23,7 @@ $theme: mat.define-theme(
   color-scheme: light dark;
   @include mat.all-component-themes($theme);
   @include mat.typography-hierarchy($theme);
+  @include mat.system-level-colors($theme);
   @include mat.fab-overrides(
     (
       small-container-color: var(--mat-sys-primary-container),
@@ -33,5 +34,4 @@ $theme: mat.define-theme(
       container-color: mat.get-theme-color($theme, primary, 10),
     )
   );
- 
 }

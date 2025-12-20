@@ -17,6 +17,9 @@ import { CurrencyPipe } from '@angular/common';
   }
   mat-paginator{
     border-radius: 0 0 10px 10px;
+  }
+  .description{
+    overflow-wrap: anywhere;
   }`,
 })
 export class ProductTableComponent {

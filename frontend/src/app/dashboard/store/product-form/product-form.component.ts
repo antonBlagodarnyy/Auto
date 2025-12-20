@@ -34,13 +34,14 @@ type ProductFormModel = Omit<IProduct, 'stock' | 'price'> & {
   ],
   templateUrl: './product-form.component.html',
   styles: `form {
-    padding: 2vh;
     display: flex;
+     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
   mat-form-field{
-  padding:2vh;
+     width:100%;
+  padding: 0.5rem;
   }
   `,
 })
@@ -67,7 +68,7 @@ export class ProductFormComponent {
   }>();
 
   //Should be edited or created
-  editMode: boolean = !!this.dialogRef;
+  editMode: boolean = !!this.oldProduct;
 
   productForm = new FormGroup({
     title: new FormControl('', Validators.required),
@@ -88,11 +89,13 @@ export class ProductFormComponent {
       if (!this.editMode) {
         const { title, description, stock, price } = this.productForm.value;
         if (title && description && stock && price) {
-          this.createdEvent.emit({
-            title: title,
-            description: description,
-            stock: +stock,
-            price: +price,
+          this.dialogRef?.close({
+            newProduct: {
+              title: title,
+              description: description,
+              stock: stock,
+              price: price,
+            },
           });
         }
       } else {

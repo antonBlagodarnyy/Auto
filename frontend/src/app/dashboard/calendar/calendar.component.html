@@ -19,7 +19,12 @@
 </div>
 
 <mat-card class="calendar-card">
-  <mat-grid-list cols="7" rowHeight="5:1" gutterSize="2px">
+  <mat-grid-list
+    cols="7"
+    class="calendar"
+    rowHeight="{{ isSmallScreen()?.matches ? '3:4' : '5:2' }}"
+    gutterSize="0.5rem"
+  >
     @for (weekDay of weekDays(); track $index){
     <mat-grid-tile>{{ weekDay }}</mat-grid-tile>
     } @for (dayOfMonth of daysOfMonth(); track $index) {
@@ -32,15 +37,19 @@
       }"
       (click)="activeDay.set(dayOfMonth); openDay(dayOfMonth)"
     >
-      @if(meetings()[dayOfMonth.toFormat('yyyy-MM-dd')] &&
-      meetings()[dayOfMonth.toFormat('yyyy-MM-dd')].length>0){
-      <span
-        matBadge="{{ meetings()[dayOfMonth.toFormat('yyyy-MM-dd')].length }}"
-        >{{ dayOfMonth.day }}</span
-      >
-      }@else{
-      <span>{{ dayOfMonth.day }}</span>
-      }
+      <div class="day-content">
+        @if(meetings()[dayOfMonth.toFormat('yyyy-MM-dd')] &&
+        meetings()[dayOfMonth.toFormat('yyyy-MM-dd')].length>0){
+
+        <span
+          matBadge="{{ meetings()[dayOfMonth.toFormat('yyyy-MM-dd')].length }}"
+          matBadgeOverlap="true"
+          matBadgePosition="before"
+        >
+        </span>
+        }
+        <span class="day">{{ dayOfMonth.day }}</span>
+      </div>
     </mat-grid-tile>
     }
   </mat-grid-list>

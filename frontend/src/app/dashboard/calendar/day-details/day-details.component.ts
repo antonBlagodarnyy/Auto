@@ -35,7 +35,7 @@ type IDialogData = {
     MatIconModule,
     DayDetailsFormComponent,
   ],
-  template: `<div class="container">
+  template: `
     <h2 mat-dialog-title>
       {{ dialogData.selectedDay.day }}-{{
         dialogData.selectedDay.monthShort
@@ -73,13 +73,14 @@ type IDialogData = {
 
       } }
     </mat-dialog-content>
-  </div>`,
+`,
   styles: `
-.container{
-    padding: 2vh;
-  }
+
 mat-card{
   margin: 2vh;
+}
+mat-card-content{
+  overflow-wrap: break-word;
 }
   `,
 })

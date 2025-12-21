@@ -30,23 +30,31 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       />
       <mat-hint align="end">{{ name?.length }}/20</mat-hint>
     </mat-form-field>
-    <button mat-raised-button type="submit">Save</button>
-    @if(this.editMode().edit){
-    <button mat-icon-button type="button" (click)="onCancelEditEvent.emit()">
-      <mat-icon fontIcon="cancel" />
-    </button>
-    }
+    <div class="container-actions">
+      <button mat-raised-button type="submit">Save</button>
+      @if(this.editMode().edit){
+      <button mat-icon-button type="button" (click)="onCancelEditEvent.emit()">
+        <mat-icon fontIcon="cancel" />
+      </button>
+      }
+    </div>
   </form>`,
   styles: `form{
     padding:2vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
  }
  mat-form-field{
-  width: 80%;
+  width: 100%;
  }
  form button {
-  margin-left: 2vh;
+  margin-top: 1rem;
+ }
+ .container-actions{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
  }`,
 })
 export class DayDetailsFormComponent implements OnInit {

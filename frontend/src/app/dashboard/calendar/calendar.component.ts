@@ -19,6 +19,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DayDetailsComponent } from './day-details/day-details.component';
 import { MatBadgeModule } from '@angular/material/badge';
+import { ViewportService } from '../../services/viewport.service';
 
 @Component({
   selector: 'app-calendar',
@@ -35,7 +36,9 @@ import { MatBadgeModule } from '@angular/material/badge';
 })
 export class CalendarComponent implements OnInit {
   constructor(private dialog: MatDialog) {}
-
+  protected viewportService = inject(ViewportService);
+  isSmallScreen = toSignal(this.viewportService.isSmallScreen$);
+  
   private calendarService = inject(CalendarService);
 
   meetings: Signal<IMeetings> = toSignal(this.calendarService.meetings$, {
@@ -101,8 +104,8 @@ export class CalendarComponent implements OnInit {
 
   openDay(selectedDay: DateTime) {
     this.dialog.open(DayDetailsComponent, {
-      width: '80%',
-      maxWidth: '100%',
+      
+      maxHeight: '80vh',
       data: { selectedDay: selectedDay, meetings: this.activeDayMeetings },
     });
   }

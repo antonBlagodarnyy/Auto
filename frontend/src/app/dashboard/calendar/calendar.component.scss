@@ -7,14 +7,19 @@
   align-items: center;
   margin: 2vh 5vh 2vh 5vh;
 }
-
+@media ((max-width: 599.98px)) {
+  .calendar-headline {
+    flex-direction: column;
+  }
+}
 .calendar-card {
-  padding: 3vh;
-  margin: 0 5vh 0 5vh;
+
+  padding: 2rem;
+  margin: 0 1rem 1rem 1rem;
 }
 
 .calendar-day {
-  border-radius: 2vh;
+  border-radius: 10px;
   cursor: pointer;
 }
 
@@ -26,6 +31,12 @@
   background: mat.get-theme-color(theme.$theme, secondary, 80);
 }
 
-span{
-  padding: 2vh;
+.day {
+  margin: 0.8rem;
+}
+.day-content {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
 }

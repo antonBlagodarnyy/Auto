@@ -1,6 +1,8 @@
+<a mat-raised-button [routerLink]="['/profile/signup']"
+  >Signup</a
+>
 <div class="container-form">
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <a mat-raised-button [routerLink]="['/profile/signup']">Signup</a>
     <mat-form-field>
       <mat-label>Email</mat-label>
       <input matInput id="email" type="text" formControlName="email" />
@@ -18,6 +20,8 @@
       <mat-error>Password is required.</mat-error>
     </mat-form-field>
 
-    <button mat-raised-button type="submit">Login</button>
+    <button mat-fab extended type="submit">
+      <mat-icon>login</mat-icon>Login
+    </button>
   </form>
 </div>

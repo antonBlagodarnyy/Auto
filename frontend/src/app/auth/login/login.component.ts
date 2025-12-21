@@ -9,10 +9,18 @@ import { AuthService } from '../../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { MatInputModule, MatLabel } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, MatInputModule, MatLabel, MatButtonModule,RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    MatInputModule,
+    MatLabel,
+    MatButtonModule,
+    RouterLink,
+    MatIconModule
+  ],
   styleUrl: '../auth.component.scss',
   templateUrl: './login.component.html',
 })

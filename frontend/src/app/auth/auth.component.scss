@@ -1,24 +1,26 @@
-
 .container-form {
-        display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
   margin: 5rem 2rem 0 2rem;
 }
-  mat-form-field {
-    width: 60vw;
-    margin: 1rem;
-  }
-button{
-    width: 5rem;
-    margin-right: 2rem;
+mat-form-field {
+  width: 60vw;
+  margin: 1rem;
+}
+button {
+  width: 7rem;
+  margin-right: 2rem;
 }
 form {
   display: flex;
   flex-direction: column;
   align-content: center;
   justify-content: center;
+  margin-bottom: 2rem;
 }
-a{
-    width: 5rem;
-    align-self: flex-end;
+a {
+  margin-top: 2rem;
+  margin-left:  60%;
+
+  
 }

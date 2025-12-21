@@ -12,6 +12,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { MatError, MatInputModule, MatLabel } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-signup',
@@ -21,15 +22,14 @@ import { MatButtonModule } from '@angular/material/button';
     MatLabel,
     MatButtonModule,
     MatError,
-    RouterLink
-],
+    RouterLink,
+    MatIconModule,
+  ],
   templateUrl: './signup.component.html',
   styleUrl: '../auth.component.scss',
 })
 export class SignupComponent {
-  constructor(
-    private authService: AuthService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   passwordMatch: ValidatorFn = (
     control: AbstractControl

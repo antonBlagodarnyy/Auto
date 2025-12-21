@@ -20,7 +20,7 @@ $theme: mat.define-theme(
 );
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light ;
   @include mat.all-component-themes($theme);
   @include mat.typography-hierarchy($theme);
   @include mat.system-level-colors($theme);

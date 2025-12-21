@@ -6,13 +6,11 @@
 
 ### Changes
 
-1. Make mobile responsive.
+1. Connect the entities with the meetings.
 
-2. Connect the entities with the meetings.
+2. Custom tables.
 
-3. Custom tables.
-
-4. Add a welcome screen.
+3. Add a welcome screen.
 
 ## V1.1.2
 

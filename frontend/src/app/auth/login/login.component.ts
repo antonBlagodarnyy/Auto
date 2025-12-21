@@ -6,13 +6,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatInputModule, MatLabel } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, MatInputModule, MatLabel, MatButtonModule],
+  imports: [ReactiveFormsModule, MatInputModule, MatLabel, MatButtonModule,RouterLink],
   styleUrl: '../auth.component.scss',
   templateUrl: './login.component.html',
 })
@@ -24,10 +24,6 @@ export class LoginComponent {
   });
   ngOnInit(): void {
     this.authService.autoAuthUser();
-
-    //if (this.authService.user.getValue()) {
-    //  this.router.navigate(['dashboard']);
-    //}
   }
   onSubmit() {
     if (!this.loginForm.invalid) {

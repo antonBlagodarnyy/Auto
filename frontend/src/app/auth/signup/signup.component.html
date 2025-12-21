@@ -1,9 +1,10 @@
-<div class="container">
+<div class="container-form">
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <a mat-raised-button [routerLink]="['/profile/login']">Login</a>
     <mat-form-field>
       <mat-label>User name:</mat-label>
       <input matInput id="userName" type="text" formControlName="userName" />
-        <mat-error>User name is required.</mat-error>
+      <mat-error>User name is required.</mat-error>
     </mat-form-field>
 
     <mat-form-field>
@@ -31,6 +32,7 @@
       />
       <mat-error> Passwords must match.</mat-error>
     </mat-form-field>
-    <button mat-raised-button type="submit">Registrar</button>
+
+    <button mat-raised-button type="submit">Signup</button>
   </form>
 </div>

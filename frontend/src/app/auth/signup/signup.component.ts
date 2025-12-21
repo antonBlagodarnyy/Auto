@@ -9,7 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatError, MatInputModule, MatLabel } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -21,14 +21,14 @@ import { MatButtonModule } from '@angular/material/button';
     MatLabel,
     MatButtonModule,
     MatError,
-  ],
+    RouterLink
+],
   templateUrl: './signup.component.html',
   styleUrl: '../auth.component.scss',
 })
 export class SignupComponent {
   constructor(
     private authService: AuthService,
-    private router: Router,
   ) {}
 
   passwordMatch: ValidatorFn = (
